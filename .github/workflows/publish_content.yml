@@ -36,8 +36,8 @@ jobs:
 
     - name: Commit and push changes
       run: |
-        git config --global user.name "workflow-bot"
-        git config --global user.email "workflow@bot.de"
+        git config --global user.name "arash77"
+        git config --global user.email "arash77.kad@gmail.com"
   
         git add -A
         git commit -m "update contents"

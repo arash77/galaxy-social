@@ -10,8 +10,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
+    permissions:
+      contents: write
 
     steps:
     - uses: actions/checkout@v3
@@ -26,12 +26,6 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install markdown atproto Mastodon.py beautifulsoup4
 
-    - name: Download artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: processed_files_dict
-        path: processed_files.json
-
     - name: Run script to publish contents
       env:
         MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
@@ -39,10 +33,5 @@ jobs:
         BLUESKY_USERNAME: ${{ secrets.BLUESKY_USERNAME }}
         BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
       run: python main.py
-    
-    - name: Upload dictionary as artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: processed_files_dict
-        path: processed_files.json  
-        
+
+    - uses: stefanzweifel/git-auto-commit-action@v5

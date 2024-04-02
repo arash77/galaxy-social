@@ -212,5 +212,6 @@ def process_markdown_files():
             processed_files[file_name] = stats
     with open('processed_files.json', 'w') as file:
         file.write(json.dumps(processed_files))
-
-process_markdown_files()
+        
+if __name__ == '__main__':
+    process_markdown_files()

@@ -192,8 +192,8 @@ def post_to_linkedin(content):
 
 def process_markdown_files():
     current_folder = os.path.dirname(os.path.abspath(__file__))
-    toots_folder = current_folder+'/toots'
-    processed_files = dict()
+    toots_folder = os.path.join(current_folder, 'toots')
+    processed_files = {}
     if os.path.exists('processed_files.json'):
         with open('processed_files.json', 'r') as file:
             processed_files = json.load(file)
@@ -201,7 +201,7 @@ def process_markdown_files():
         if file_name.endswith('.toot') and not processed_files.get(file_name):
             file_path = os.path.join(toots_folder, file_name)
             content, metadata = parse_markdown_file(file_path)
-            stats = dict()
+            stats = {}
             for channel in metadata.social_media:
                 if channel == 'bluesky':
                     stats[channel] = post_to_bluesky(content)
@@ -211,7 +211,7 @@ def process_markdown_files():
                     stats[channel] = post_to_mastodon(content)
             processed_files[file_name] = stats
     with open('processed_files.json', 'w') as file:
-        file.write(json.dumps(processed_files))
+        json.dump(processed_files, file)
         
 if __name__ == '__main__':
     process_markdown_files()

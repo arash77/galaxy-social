@@ -202,8 +202,8 @@ def process_markdown_files():
                     stats[channel] = post_to_linkedin(content)
                 elif channel == 'mastodon':
                     stats[channel] = post_to_mastodon(content)
+            processed_files[file_name] = stats
             with open('processed_files.json', 'w') as file:
-                processed_files[file_name] = stats
                 json.dump(processed_files, file)
             print(f'Processed {file_name} with stats {stats}')
 

@@ -33,12 +33,15 @@ jobs:
         BLUESKY_USERNAME: ${{ secrets.BLUESKY_USERNAME }}
         BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
       run: python main.py
-
-    - name: Commit and push changes
-      run: |
-        git config --global user.name "arash77"
-        git config --global user.email "arash77.kad@gmail.com"
-  
-        git add -A
-        git commit -m "update contents"
-        git push
+    
+    - name: Upload dictionary as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: processed_files_dict
+        path: processed_files.json  
+        
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: processed_files_dict
+        path: processed_files.json

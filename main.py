@@ -157,13 +157,14 @@ def post_to_bluesky(content):
         content = content[:297] + '...'
     facets, embed_external = parse_facets(content)
     post = blueskysocial.send_post(content, facets=facets, embed=embed_external)
-    data = blueskysocial.get_author_feed(
-        actor=post.uri[post.uri.find('did:plc:'):post.uri.find('/app.bsky.feed.post')], 
-        filter='posts_and_author_threads',
-        limit=1,
-    )
-    post_text = data.feed[0].post.record.text
-    return post_text == content
+    # set IndexError if no post is found in the data and try again
+    for _ in range(3):
+        try:
+            post = blueskysocial.get_post(post.uri)
+            break
+        except IndexError:
+            pass
+    return post.text == content
 
 def post_to_mastodon(content):
     if len(content) > 500:

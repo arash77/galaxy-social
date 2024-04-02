@@ -34,6 +34,11 @@ jobs:
         BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
       run: python main.py
 
-    - name: Save JSON data
-      run: echo "${{ steps.build.outputs.json_data }}" > output.json
-      shell: bash
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "workflow-bot"
+        git config --global user.email "workflow@bot.de"
+  
+        git add -A
+        git commit -m "update contents"
+        git push

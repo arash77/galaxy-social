@@ -210,6 +210,7 @@ def process_markdown_files():
                 elif channel == 'mastodon':
                     stats[channel] = post_to_mastodon(content)
             processed_files[file_name] = stats
-            print(json.dumps(processed_files))
+    with open('processed_files.json', 'w') as file:
+        file.write(json.dumps(processed_files))
 
 process_markdown_files()

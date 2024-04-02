@@ -3,13 +3,10 @@ import markdown
 import atproto
 import requests
 from mastodon import Mastodon
-import time
-import redis
+import json
 from bs4 import BeautifulSoup
 import re
 from typing import Dict, List
-
-processed_files = redis.Redis(host='localhost', port=6379, db=0)
 
 blueskysocial = atproto.Client(base_url='https://bsky.social')
 blueskysocial.login('brilliantarash.bsky.social', 'arash1377')
@@ -188,24 +185,26 @@ def post_to_linkedin(content):
 def process_markdown_files():
     current_folder = os.path.dirname(os.path.abspath(__file__))
     toots_folder = current_folder+'/toots'
-    
-    while True:
-        for file_name in os.listdir(toots_folder):
-            # if file_name.endswith('.toot') and not processed_files.get(file_name):
-                file_path = os.path.join(toots_folder, file_name)
-                content, metadata = parse_markdown_file(file_path)
-                stats = dict()
-                for channel in metadata.social_media:
-                    print(f'Posting to {channel}')
-                    if channel == 'bluesky':
-                        stats[channel] = post_to_bluesky(content)
-                    elif channel == 'linkedin':
-                        stats[channel] = post_to_linkedin(content)
-                    elif channel == 'mastodon':
-                        stats[channel] = post_to_mastodon(content)
-                processed_files.set(file_name, str(stats))
-                print(f'Processed {file_name} with stats {stats}')
-        
-        time.sleep(60)
+    processed_files = dict()
+    if os.path.exists('processed_files.json'):
+        with open('processed_files.json', 'r') as file:
+            processed_files = json.load(file)
+    for file_name in os.listdir(toots_folder):
+        if file_name.endswith('.toot') and not processed_files.get(file_name):
+            file_path = os.path.join(toots_folder, file_name)
+            content, metadata = parse_markdown_file(file_path)
+            stats = dict()
+            for channel in metadata.social_media:
+                print(f'Posting to {channel}')
+                if channel == 'bluesky':
+                    stats[channel] = post_to_bluesky(content)
+                elif channel == 'linkedin':
+                    stats[channel] = post_to_linkedin(content)
+                elif channel == 'mastodon':
+                    stats[channel] = post_to_mastodon(content)
+            with open('processed_files.json', 'w') as file:
+                processed_files[file_name] = stats
+                json.dump(processed_files, file)
+            print(f'Processed {file_name} with stats {stats}')
 
 process_markdown_files()

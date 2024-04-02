@@ -203,7 +203,6 @@ def process_markdown_files():
             content, metadata = parse_markdown_file(file_path)
             stats = dict()
             for channel in metadata.social_media:
-                print(f'Posting to {channel}')
                 if channel == 'bluesky':
                     stats[channel] = post_to_bluesky(content)
                 elif channel == 'linkedin':
@@ -211,8 +210,6 @@ def process_markdown_files():
                 elif channel == 'mastodon':
                     stats[channel] = post_to_mastodon(content)
             processed_files[file_name] = stats
-            with open('processed_files.json', 'w') as file:
-                json.dump(processed_files, file)
-            print(f'Processed {file_name} with stats {stats}')
+            print(processed_files)
 
 process_markdown_files()

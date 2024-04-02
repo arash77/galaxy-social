@@ -35,5 +35,5 @@ jobs:
       run: python main.py
 
     - name: Save JSON data
-      run: cp processed_files.json $HOME/processed_files.json
+      run: echo "${{ steps.build.outputs.json_data }}" > output.json
       shell: bash

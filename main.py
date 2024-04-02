@@ -8,38 +8,42 @@ from bs4 import BeautifulSoup
 import re
 from typing import Dict, List
 
-blueskysocial = atproto.Client(base_url='https://bsky.social')
-blueskysocial.login(os.environ.get('BLUESKY_USERNAME'), os.environ.get('BLUESKY_PASSWORD'))
+# blueskysocial = atproto.Client(base_url='https://bsky.social')
+# blueskysocial.login(os.environ.get('BLUESKY_USERNAME'), os.environ.get('BLUESKY_PASSWORD'))
 
-mastodon_handle = Mastodon(access_token = os.environ.get('MASTODON_ACCESS_TOKEN'),api_base_url = 'https://mstdn.science')
+# mastodon_handle = Mastodon(access_token = os.environ.get('MASTODON_ACCESS_TOKEN'),api_base_url = 'https://mstdn.science')
 
 class LinkedIn():
     def __init__(self):
-        self.access_token = os.environ.get('MASTODON_ACCESS_TOKEN')
-        self.api_base_url = 'https://api.linkedin.com/v2/'
+        self.access_token = os.environ.get('LINKEDIN_ACCESS_TOKEN')
+        self.api_base_url = 'https://api.linkedin.com/rest/'
         self.headers = {
             'Authorization': f'Bearer {self.access_token}',
             'Content-Type': 'application/json',
+            'X-Restli-Protocol-Version': '2.0.0',
+            'LinkedIn-Version': '202403',
         }
 
     def post(self, content):
-        url = self.api_base_url + 'ugcPosts'
+        url = self.api_base_url + 'posts'
         data = {
-            'author': 'urn:li:person:123456789',
-            'lifecycleState': 'PUBLISHED',
-            'specificContent': {
-                'comLinkedinUgc': {
-                    'shareCommentary': {
-                        'text': content
-                    },
-                    'shareMediaCategory': 'NONE'
+                "author": "urn:li:organization:5515715",
+                "commentary": content,
+                "visibility": "PUBLIC",
+                "distribution": {
+                    "feedDistribution": "MAIN_FEED",
+                    "targetEntities": [],
+                    "thirdPartyDistributionChannels": []
+                },
+                "lifecycleState": "PUBLISHED",
+                "isReshareDisabledByAuthor": False
                 }
-            },
-            'visibility': {
-                'comLinkedinUgcVisibility': 'PUBLIC'
-            }
-        }
         response = requests.post(url, headers=self.headers, json=data)
+        return response.json()
+    
+    def get_profile(self):
+        url = self.api_base_url + 'people/~'
+        response = requests.get(url, headers=self.headers)
         return response.json()
 
 linkedin_handle = LinkedIn()
@@ -152,7 +156,6 @@ def parse_facets(text: str) -> List[Dict]:
     return facets, embed_external
 
 def post_to_bluesky(content):
-    """Post to bluesky.social."""
     if len(content) > 300:
         content = content[:297] + '...'
     facets, embed_external = parse_facets(content)
@@ -210,6 +213,7 @@ def process_markdown_files():
                 elif channel == 'mastodon':
                     stats[channel] = post_to_mastodon(content)
             processed_files[file_name] = stats
+            print(f'Processed {file_name}: {stats}')
     with open('processed_files.json', 'w') as file:
         json.dump(processed_files, file)
         

@@ -9,13 +9,13 @@ import re
 from typing import Dict, List
 
 blueskysocial = atproto.Client(base_url='https://bsky.social')
-blueskysocial.login('brilliantarash.bsky.social', 'arash1377')
+blueskysocial.login(os.environ.get('BLUESKY_USERNAME'), os.environ.get('BLUESKY_PASSWORD'))
 
-mastodon_handle = Mastodon(access_token = '-DoRFSxyPiljkhPCqXjSNqsFZgPbakPWZJaIyu_-SmY',api_base_url = 'https://mstdn.science')
+mastodon_handle = Mastodon(access_token = os.environ.get('MASTODON_ACCESS_TOKEN'),api_base_url = 'https://mstdn.science')
 
 class LinkedIn():
     def __init__(self):
-        self.access_token = ''
+        self.access_token = os.environ.get('MASTODON_ACCESS_TOKEN')
         self.api_base_url = 'https://api.linkedin.com/v2/'
         self.headers = {
             'Authorization': f'Bearer {self.access_token}',

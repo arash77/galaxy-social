@@ -26,6 +26,12 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install markdown atproto Mastodon.py beautifulsoup4
 
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: processed_files_dict
+        path: processed_files.json
+
     - name: Run script to publish contents
       env:
         MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
@@ -40,8 +46,3 @@ jobs:
         name: processed_files_dict
         path: processed_files.json  
         
-    - name: Download artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: processed_files_dict
-        path: processed_files.json

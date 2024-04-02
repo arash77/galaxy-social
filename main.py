@@ -210,6 +210,6 @@ def process_markdown_files():
                 elif channel == 'mastodon':
                     stats[channel] = post_to_mastodon(content)
             processed_files[file_name] = stats
-            print(processed_files)
+            print(json.dumps(processed_files))
 
 process_markdown_files()

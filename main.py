@@ -186,11 +186,12 @@ def post_to_mastodon(content):
 
 def post_to_linkedin(content):
     linkedin_handle.post(content)
-    linkedin_posts = linkedin_handle.get_profile()
-    for post in linkedin_posts['activity']:
-        if content in post['body']['text']:
-            return True
-    return False
+    return True
+    # linkedin_posts = linkedin_handle.get_profile()
+    # for post in linkedin_posts['posts']['values']:
+    #     if content in post['commentary']:
+    #         return True
+    # return False
 
 
 def process_markdown_files():

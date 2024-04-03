@@ -8,10 +8,10 @@ from bs4 import BeautifulSoup
 import re
 from typing import Dict, List
 
-# blueskysocial = atproto.Client(base_url='https://bsky.social')
-# blueskysocial.login(os.environ.get('BLUESKY_USERNAME'), os.environ.get('BLUESKY_PASSWORD'))
+blueskysocial = atproto.Client(base_url='https://bsky.social')
+blueskysocial.login(os.environ.get('BLUESKY_USERNAME'), os.environ.get('BLUESKY_PASSWORD'))
 
-# mastodon_handle = Mastodon(access_token = os.environ.get('MASTODON_ACCESS_TOKEN'),api_base_url = 'https://mstdn.science')
+mastodon_handle = Mastodon(access_token = os.environ.get('MASTODON_ACCESS_TOKEN'),api_base_url = 'https://mstdn.science')
 
 class LinkedIn():
     def __init__(self):

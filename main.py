@@ -147,10 +147,10 @@ def parse_facets(text: str) -> List[Dict]:
             soup = BeautifulSoup(response.text, 'html.parser')
             embed_external = atproto.models.AppBskyEmbedExternal.Main(
                 external=atproto.models.AppBskyEmbedExternal.External(
-                    title=soup.find('meta', attrs={'property': 'og:title'})['content'],
-                    description=soup.find('meta', attrs={'property': 'og:description'})['content'],
+                    title=soup.find('meta', attrs={'property': 'og:title'})['content'] if soup.find('meta', attrs={'property': 'og:title'}) else soup.title.string,
+                    description=soup.find('meta', attrs={'property': 'og:description'})['content'] if soup.find('meta', attrs={'property': 'og:description'}) else soup.find('meta', attrs={'name': 'description'})['content'] if soup.find('meta', attrs={'name': 'description'}) else soup.title.string,
                     uri=u["url"],
-                    thumb=blueskysocial.upload_blob(requests.get(soup.find('meta', attrs={'property': 'og:image'})['content']).content).blob,
+                    thumb=blueskysocial.upload_blob(requests.get(soup.find('meta', attrs={'property': 'og:image'})['content']).content).blob if soup.find('meta', attrs={'property': 'og:image'}) else None,
                 )
             )
     return facets, embed_external

@@ -1,14 +1,13 @@
 import re
 from typing import Dict, List
 import atproto
-
 import requests
 from bs4 import BeautifulSoup
 
 class bluesky_social_client:
     def __init__(self, base_url='https://bsky.social', username=None, password=None):
         self.blueskysocial = atproto.Client(base_url=base_url)
-        self.blueskysocial.login(username=username, password=password)
+        self.blueskysocial.login(login=username, password=password)
 
     def parse_mentions(self, text: str) -> List[Dict]:
         spans = []

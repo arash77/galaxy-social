@@ -97,7 +97,7 @@ class bluesky_social_client:
                 )
         return facets, embed_external
 
-    def post(self, content):
+    def create_post(self, content):
         if len(content) > 300:
             content = content[:297] + '...'
         facets, embed_external = self.parse_facets(content)

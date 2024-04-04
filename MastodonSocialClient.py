@@ -5,7 +5,7 @@ class mastodon_social_client:
     def __init__(self, access_token=None, api_base_url='https://mstdn.science'):
         self.mastodon_handle = Mastodon(access_token = access_token, api_base_url = api_base_url)
 
-    def post(self, content):
+    def create_post(self, content):
         if len(content) > 500:
             content = content[:497] + '...'
         post = self.mastodon_handle.toot(content)

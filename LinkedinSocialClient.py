@@ -10,7 +10,7 @@ class linkedin_social_client():
             'LinkedIn-Version': '202403',
         }
 
-    def post_method(self, content):
+    def linkedin_post(self, content):
         url = self.api_base_url + 'posts'
         data = {
                 "author": "urn:li:organization:5515715",
@@ -33,8 +33,8 @@ class linkedin_social_client():
         return response.json()
     
     # This method is not implemented
-    def post(self, content):
-        self.post(content)
+    def create_post(self, content):
+        self.linkedin_post(content)
         return True
         linkedin_posts = self.get_profile()
         for post in linkedin_posts['posts']['values']:

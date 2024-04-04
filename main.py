@@ -30,9 +30,9 @@ def parse_markdown_file(file_path):
             if line.startswith('social_media:'):
                 metadata.social_media = line.split(':')[1].strip().replace(' ', '').lower().split(',')
             if line.startswith('mentions:'):
-                metadata.mentions = line.split(':')[1].strip().replace(' ', '').split(',')
+                metadata.mentions = line.split(':')[1].strip().replace(' ', '')
             if line.startswith('hashtags:'):
-                metadata.hashtags = line.split(':')[1].strip().replace(' ', '').split(',')
+                metadata.hashtags = line.split(':')[1].strip().replace(' ', '')
             if line.startswith('images:'):
                 metadata.images = line.split(':')[1].strip().replace(' ', '').split(',')
             if line.startswith('alt_texts:'):

@@ -1,7 +1,7 @@
 ---
 social_media: mastodon
-images: ["https://techcrunch.com/wp-content/uploads/2023/08/bluesky-005.jpg"]
-alt_texts: ["A blue sky with a few clouds."]
+images: "https://techcrunch.com/wp-content/uploads/2023/08/bluesky-005.jpg"
+alt_texts: "A blue sky with a few clouds."
 mentions: mastodon[brilliantarash]
 hashtags: mastodon[api,test]
 ---

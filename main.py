@@ -47,8 +47,7 @@ def process_markdown_files():
                 if channel == 'bluesky':
                     stats[channel] = bluesky_handle.create_post(content)
                 elif channel == 'linkedin':
-                    return False
-                    stats[channel] = linkedin_handle.create_post(content)
+                    pass
                 elif channel == 'mastodon':
                     stats[channel] = mastodon_handle.create_post(content)
             processed_files[file_name] = stats

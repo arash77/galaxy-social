@@ -34,9 +34,9 @@ def parse_markdown_file(file_path):
             if line.startswith('hashtags:'):
                 metadata.hashtags = line.split(':')[1].strip().replace(' ', '')
             if line.startswith('images:'):
-                metadata.images = line.split(':')[1].strip().replace(' ', '').split(',')
+                metadata.images = re.findall(r'https?://\S+', line) .split(',')
             if line.startswith('alt_texts:'):
-                metadata.alt_texts = line.split(':')[1].strip().replace(' ', '').split(',')
+                metadata.alt_texts = line.split("alt_texts:", 1)[1].strip().replace(' ', '').split(',')
             
         text = content.split('---')[2].lstrip('\n')
         markdown_content = markdown.markdown(text)

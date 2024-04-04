@@ -46,10 +46,11 @@ def process_markdown_files():
             for channel in metadata.social_media:
                 if channel == 'bluesky':
                     stats[channel] = bluesky_handle.create_post(content)
-                elif channel == 'linkedin':
-                    pass
                 elif channel == 'mastodon':
                     stats[channel] = mastodon_handle.create_post(content)
+                elif channel == 'linkedin':
+                    stats[channel] = False
+                    # stats[channel] = linkedin_handle.create_post(content)
             processed_files[file_name] = stats
             print(f'Processed {file_name}: {stats}')
     with open('processed_files.json', 'w') as file:

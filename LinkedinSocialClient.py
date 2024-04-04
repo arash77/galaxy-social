@@ -35,6 +35,7 @@ class linkedin_social_client():
     # This method is not implemented
     def post(self, content):
         self.post(content)
+        return True
         linkedin_posts = self.get_profile()
         for post in linkedin_posts['posts']['values']:
             if content in post['commentary']:

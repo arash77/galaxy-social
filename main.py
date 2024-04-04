@@ -28,15 +28,15 @@ def parse_markdown_file(file_path):
         metadata = MetadataHeader()
         for line in content.split('\n'):
             if line.startswith('social_media:'):
-                metadata.social_media = line.split(':')[1].strip().replace(' ', '').lower().split(',')
+                metadata.social_media = line.split('social_media:', 1)[1].strip().replace(' ', '').lower().split(',')
             if line.startswith('mentions:'):
-                metadata.mentions = line.split(':')[1].strip().replace(' ', '')
+                metadata.mentions = line.split('mentions:', 1)[1].strip().replace(' ', '')
             if line.startswith('hashtags:'):
-                metadata.hashtags = line.split(':')[1].strip().replace(' ', '')
+                metadata.hashtags = line.split('hashtags:', 1)[1].strip().replace(' ', '')
             if line.startswith('images:'):
-                metadata.images = re.findall(r'https?://\S+', line)
+                metadata.images = line.split("images:", 1)[1].strip().split('"')[1::2]
             if line.startswith('alt_texts:'):
-                metadata.alt_texts = line.split("alt_texts:", 1)[1].strip().replace(' ', '').split(',')
+                metadata.alt_texts = line.split("alt_texts:", 1)[1].strip().split('"')[1::2]
             
         text = content.split('---')[2].lstrip('\n')
         markdown_content = markdown.markdown(text)

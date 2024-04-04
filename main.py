@@ -23,7 +23,7 @@ def parse_markdown_file(file_path):
         metadata = MetadataHeader()
         for line in content.split('\n'):
             if line.startswith('social_media:'):
-                metadata.social_media = line.split(':')[1].strip().replace(' ', '').split(',').lower()
+                metadata.social_media = line.split(':')[1].strip().replace(' ', '').lower().split(',')
         text = content.split('---')[2].lstrip('\n')
         markdown_content = markdown.markdown(text)
         plain_content = BeautifulSoup(markdown_content, 'html.parser').get_text(separator='\n')

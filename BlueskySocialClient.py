@@ -117,22 +117,6 @@ class bluesky_social_client:
             )
         return embed_external
 
-    def parse_uri(uri: str) -> Dict:
-        if uri.startswith("at://"):
-            repo, collection, rkey = uri.split("/")[2:5]
-            return {"repo": repo, "collection": collection, "rkey": rkey}
-        elif uri.startswith("https://bsky.app/"):
-            repo, collection, rkey = uri.split("/")[4:7]
-            if collection == "post":
-                collection = "app.bsky.feed.post"
-            elif collection == "lists":
-                collection = "app.bsky.graph.list"
-            elif collection == "feed":
-                collection = "app.bsky.feed.generator"
-            return {"repo": repo, "collection": collection, "rkey": rkey}
-        else:
-            raise Exception("unhandled URI format: " + uri)
-
 
     def create_post(self, content, mentions, hashtags, images, alt_texts):
         if images:
@@ -144,23 +128,24 @@ class bluesky_social_client:
                     upload = self.blueskysocial.com.atproto.repo.upload_blob(img_data)
                     embed_images.append(atproto.models.AppBskyEmbedImages.Image(alt=alt_texts[images.index(image)], image=upload.blob))
             embed=atproto.models.AppBskyEmbedImages.Main(images=embed_images)
-
+        
         status = []
         reply_to = None
         for text in textwrap.wrap(content + '\n' + mentions + '\n' + hashtags, self.max_content_length, replace_whitespace=False):
             facets, last_url = self.parse_facets(text)
-            if not images or reply_to is not None:
+            if not images or reply_to:
                 embed = self.handle_url_card(last_url)
 
             post = self.blueskysocial.send_post(text, facets=facets, embed=embed, reply_to=reply_to)
+            
+            post_id = post.uri.split("/")[2:5][0]
+            data = self.blueskysocial.get_author_feed(actor=post_id, filter='posts_and_author_threads', limit=1)
+            post_text = data.feed[0].post.record.text
+            status.append(post_text == text)
+
             if reply_to is None:
                 root = atproto.models.create_strong_ref(post)
             parent = atproto.models.create_strong_ref(post)
             reply_to = atproto.models.AppBskyFeedPost.ReplyRef(parent=parent, root=root)
-
-            post_id = self.parse_uri(post['uri'])['repo']
-            data = self.blueskysocial.get_author_feed(actor=post_id, filter='posts_and_author_threads', limit=1)
-            post_text = data.feed[0].post.record.text
-            status.append(post_text == text)
         
         return all(status)

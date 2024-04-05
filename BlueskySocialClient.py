@@ -101,7 +101,7 @@ class bluesky_social_client:
             image_tag = soup.find('meta', attrs={'property': 'og:image'})
             title = title_tag['content'] if title_tag else title_tag_alt
             description = description_tag['content'] if description_tag else description_tag_alt['content'] if description_tag_alt else None
-            uri=u["url"]
+            uri=url
             thumb=self.blueskysocial.upload_blob(requests.get(image_tag['content']).content).blob if image_tag else None
             embed_external = atproto.models.AppBskyEmbedExternal.Main(
                 external=atproto.models.AppBskyEmbedExternal.External(
@@ -137,7 +137,7 @@ class bluesky_social_client:
                 response = requests.get(image)
                 if response.status_code == 200:
                     img_data = response.content
-                    upload = self.com.atproto.repo.upload_blob(img_data)
+                    upload = self.blueskysocial.com.atproto.repo.uploadBlob(img_data)
                     embed_images.append(atproto.models.AppBskyEmbedImages.Image(alt=alt_texts[images.index(image)], image=upload.blob))
             embed=atproto.models.AppBskyEmbedImages.Main(images=embed_images)
 

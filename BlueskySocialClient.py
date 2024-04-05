@@ -145,21 +145,20 @@ class bluesky_social_client:
                     embed_images.append(atproto.models.AppBskyEmbedImages.Image(alt=alt_texts[images.index(image)], image=upload.blob))
             embed=atproto.models.AppBskyEmbedImages.Main(images=embed_images)
 
-        post_id = None
         status = []
+        reply_to = None
         for text in textwrap.wrap(content + '\n' + mentions + '\n' + hashtags, self.max_content_length, replace_whitespace=False):
             facets, last_url = self.parse_facets(text)
-            if not images or post_id is not None:
+            if not images or reply_to is not None:
                 embed = self.handle_url_card(last_url)
 
-            reply_to = None
             post = self.blueskysocial.send_post(text, facets=facets, embed=embed, reply_to=reply_to)
             if reply_to is None:
                 root = atproto.models.create_strong_ref(post)
             parent = atproto.models.create_strong_ref(post) 
             reply_to = atproto.models.AppBskyFeedPost.ReplyRef(parent=parent, root=root)
 
-
+            print(post)
             post_id = self.parse_uri(post.uri)['repo']
             data = self.blueskysocial.get_author_feed(actor=post_id, filter='posts_and_author_threads', limit=1)
             post_text = data.feed[0].post.record.text

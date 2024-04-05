@@ -7,7 +7,6 @@ import textwrap
 
 class bluesky_social_client:
     def __init__(self, base_url='https://bsky.social', username=None, password=None):
-        self.base_url = base_url
         self.blueskysocial = atproto.Client(base_url=base_url)
         self.blueskysocial.login(login=username, password=password)
         self.max_content_length = 300

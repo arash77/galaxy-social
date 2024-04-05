@@ -137,7 +137,7 @@ class bluesky_social_client:
                 response = requests.get(image)
                 if response.status_code == 200:
                     img_data = response.content
-                    upload = self.blueskysocial.com.atproto.repo.uploadBlob(img_data)
+                    upload = self.blueskysocial.com.atproto.repo.upload_blob(img_data)
                     embed_images.append(atproto.models.AppBskyEmbedImages.Image(alt=alt_texts[images.index(image)], image=upload.blob))
             embed=atproto.models.AppBskyEmbedImages.Main(images=embed_images)
 

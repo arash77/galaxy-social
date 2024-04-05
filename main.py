@@ -4,13 +4,11 @@ import json
 from bs4 import BeautifulSoup
 from BlueskySocialClient import bluesky_social_client
 from MastodonSocialClient import mastodon_social_client
-from LinkedinSocialClient import linkedin_social_client
 import re
 
 
 bluesky_handle = bluesky_social_client(username=os.environ.get('BLUESKY_USERNAME'), password=os.environ.get('BLUESKY_PASSWORD'))
 mastodon_handle = mastodon_social_client(access_token=os.environ.get('MASTODON_ACCESS_TOKEN'))
-linkedin_handle = linkedin_social_client(access_token=os.environ.get('LINKEDIN_ACCESS_TOKEN'))
 
 
 
@@ -75,9 +73,6 @@ def process_markdown_files():
                     stats[channel] = bluesky_handle.create_post(content, mentions, hashtags, metadata.images, metadata.alt_texts)
                 elif channel == 'mastodon':
                     stats[channel] = mastodon_handle.create_post(content, mentions, hashtags, metadata.images, metadata.alt_texts)
-                elif channel == 'linkedin':
-                    stats[channel] = False
-                    # stats[channel] = linkedin_handle.create_post(content, mentions, hashtags, metadata.images, metadata.alt_texts)
             processed_files[file_name] = stats
             print(f'Processed {file_name}: {stats}')
     with open('processed_files.json', 'w') as file:

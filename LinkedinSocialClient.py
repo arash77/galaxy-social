@@ -1,4 +1,6 @@
+# this file is not working! It is just a template for the final implementation...
 import requests
+
 
 class linkedin_social_client():
     def __init__(self, access_token=None, api_base_url='https://api.linkedin.com/rest/'):

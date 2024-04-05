@@ -3,11 +3,14 @@ from typing import Dict, List
 import atproto
 import requests
 from bs4 import BeautifulSoup
+import textwrap
 
 class bluesky_social_client:
     def __init__(self, base_url='https://bsky.social', username=None, password=None):
+        self.base_url = base_url
         self.blueskysocial = atproto.Client(base_url=base_url)
         self.blueskysocial.login(login=username, password=password)
+        self.max_content_length = 300
 
     def parse_mentions(self, text: str) -> List[Dict]:
         spans = []
@@ -70,7 +73,6 @@ class bluesky_social_client:
                 },
                 "features": [{"$type": "app.bsky.richtext.facet#mention", "did": did}],
             })
-        embed_external = None
         for u in self.parse_urls(text):
             facets.append({
                 "index": {
@@ -84,32 +86,78 @@ class bluesky_social_client:
                     }
                 ],
             })
-            response = requests.get(u["url"])
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'html.parser')
-                embed_external = atproto.models.AppBskyEmbedExternal.Main(
-                    external=atproto.models.AppBskyEmbedExternal.External(
-                        title=soup.find('meta', attrs={'property': 'og:title'})['content'] if soup.find('meta', attrs={'property': 'og:title'}) else soup.title.string,
-                        description=soup.find('meta', attrs={'property': 'og:description'})['content'] if soup.find('meta', attrs={'property': 'og:description'}) else soup.find('meta', attrs={'name': 'description'})['content'] if soup.find('meta', attrs={'name': 'description'}) else soup.title.string,
-                        uri=u["url"],
-                        thumb=self.blueskysocial.upload_blob(requests.get(soup.find('meta', attrs={'property': 'og:image'})['content']).content).blob if soup.find('meta', attrs={'property': 'og:image'}) else None,
-                    )
+        last_url = u["url"]
+        return facets, last_url
+    
+    def handle_url_card(self, url: str):
+        response = requests.get(url)
+        embed_external = None
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            title_tag = soup.find('meta', attrs={'property': 'og:title'})
+            title_tag_alt = soup.title.string
+            description_tag = soup.find('meta', attrs={'property': 'og:description'})
+            description_tag_alt = soup.find('meta', attrs={'name': 'description'})
+            image_tag = soup.find('meta', attrs={'property': 'og:image'})
+            title = title_tag['content'] if title_tag else title_tag_alt
+            description = description_tag['content'] if description_tag else description_tag_alt['content'] if description_tag_alt else None
+            uri=u["url"]
+            thumb=self.blueskysocial.upload_blob(requests.get(image_tag['content']).content).blob if image_tag else None
+            embed_external = atproto.models.AppBskyEmbedExternal.Main(
+                external=atproto.models.AppBskyEmbedExternal.External(
+                    title=title,
+                    description=description,
+                    uri=uri,
+                    thumb=thumb,
                 )
-        return facets, embed_external
+            )
+        return embed_external
 
-    def create_post(self, content):
-        if len(content) > 300:
-            content = content[:297] + '...'
-        facets, embed_external = self.parse_facets(content)
-        post = self.blueskysocial.send_post(content, facets=facets, embed=embed_external)
-        for _ in range(3):
-            try:
-                data = self.blueskysocial.get_author_feed(
-                    actor=post.uri[post.uri.find('did:plc:'):post.uri.find('/app.bsky.feed.post')], 
-                    filter='posts_and_author_threads',
-                    limit=1,
-                )
-                post_text = data.feed[0].post.record.text
-                return post_text == content
-            except:
-                return False
+    def parse_uri(uri: str) -> Dict:
+        if uri.startswith("at://"):
+            repo, collection, rkey = uri.split("/")[2:5]
+            return {"repo": repo, "collection": collection, "rkey": rkey}
+        elif uri.startswith("https://bsky.app/"):
+            repo, collection, rkey = uri.split("/")[4:7]
+            if collection == "post":
+                collection = "app.bsky.feed.post"
+            elif collection == "lists":
+                collection = "app.bsky.graph.list"
+            elif collection == "feed":
+                collection = "app.bsky.feed.generator"
+            return {"repo": repo, "collection": collection, "rkey": rkey}
+        else:
+            raise Exception("unhandled URI format: " + uri)
+
+
+    def create_post(self, content, mentions, hashtags, images, alt_texts):
+        if images:
+            embed_images = []
+            for image in images[:4]:
+                response = requests.get(image)
+                if response.status_code == 200:
+                    img_data = response.content
+                    upload = self.com.atproto.repo.upload_blob(img_data)
+                    embed_images.append(atproto.models.AppBskyEmbedImages.Image(alt=alt_texts[images.index(image)], image=upload.blob))
+            embed=atproto.models.AppBskyEmbedImages.Main(images=embed_images)
+
+        post_id = None
+        status = []
+        for text in textwrap.wrap(content + '\n' + mentions + '\n' + hashtags, self.max_content_length, replace_whitespace=False):
+            facets, last_url = self.parse_facets(text)
+            if not images or post_id is not None: embed = self.handle_url_card(last_url)
+
+            reply_to = None
+            post = self.blueskysocial.send_post(text, facets=facets, embed=embed, reply_to=reply_to)
+            if reply_to is None:
+                root = atproto.models.create_strong_ref(post)
+            parent = atproto.models.create_strong_ref(post) 
+            reply_to = atproto.models.AppBskyFeedPost.ReplyRef(parent=parent, root=root)
+
+
+            post_id = self.parse_uri(post.uri)['repo']
+            data = self.blueskysocial.get_author_feed(actor=post_id, filter='posts_and_author_threads', limit=1)
+            post_text = data.feed[0].post.record.text
+            status.append(post_text == text)
+        
+        return all(status)

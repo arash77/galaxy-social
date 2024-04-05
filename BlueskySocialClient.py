@@ -138,10 +138,13 @@ class bluesky_social_client:
 
             post = self.blueskysocial.send_post(text, facets=facets, embed=embed, reply_to=reply_to)
             
+
             post_id = post.uri.split("/")[2:5][0]
-            data = self.blueskysocial.get_author_feed(actor=post_id, filter='posts_and_author_threads', limit=1)
-            post_text = data.feed[0].post.record.text
-            status.append(post_text == text)
+            for _ in range(3):
+                data = self.blueskysocial.get_author_feed(actor=post_id, filter='posts_and_author_threads', limit=1)
+                if data.feed:
+                    break
+            status.append(data.feed[0].post.record.text == text)
 
             if reply_to is None:
                 root = atproto.models.create_strong_ref(post)

@@ -25,8 +25,11 @@ class mastodon_social_client:
         for text in textwrap.wrap(content + '\n' + mentions + '\n' + hashtags, self.max_content_length, replace_whitespace=False):
             toot = self.mastodon_handle.status_post(status=text, in_reply_to_id=toot_id, media_ids=media_ids if (media_ids != [] and toot_id == None) else None)
             toot_id = toot.id
-            mastodon_post = self.mastodon_handle.status(toot.id)
-            post_content = BeautifulSoup(mastodon_post.content, 'html.parser').get_text(separator=' ')
+            for _ in range(3):
+                post = self.mastodon_handle.status(toot_id)
+                if post.content:
+                    break
+            post_content = BeautifulSoup(post.content, 'html.parser').get_text(separator=' ')
             status.append(''.join(post_content.split()) == ''.join(text.split()))
         
         return all(status)

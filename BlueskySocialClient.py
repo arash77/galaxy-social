@@ -73,6 +73,7 @@ class bluesky_social_client:
                 },
                 "features": [{"$type": "app.bsky.richtext.facet#mention", "did": did}],
             })
+        last_url = None
         for u in self.parse_urls(text):
             facets.append({
                 "index": {
@@ -86,11 +87,14 @@ class bluesky_social_client:
                     }
                 ],
             })
-        last_url = u["url"]
+            last_url = u["url"]
         return facets, last_url
     
     def handle_url_card(self, url: str):
-        response = requests.get(url)
+        try:
+            response = requests.get(url)
+        except:
+            return None
         embed_external = None
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -145,7 +149,8 @@ class bluesky_social_client:
         status = []
         for text in textwrap.wrap(content + '\n' + mentions + '\n' + hashtags, self.max_content_length, replace_whitespace=False):
             facets, last_url = self.parse_facets(text)
-            if not images or post_id is not None: embed = self.handle_url_card(last_url)
+            if not images or post_id is not None:
+                embed = self.handle_url_card(last_url)
 
             reply_to = None
             post = self.blueskysocial.send_post(text, facets=facets, embed=embed, reply_to=reply_to)

@@ -31,9 +31,15 @@ jobs:
     - name: Run script to publish contents
       env:
         MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+        MASTODON_API_BASE_URL: ${{ secrets.MASTODON_API_BASE_URL }}
         LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
         BLUESKY_USERNAME: ${{ secrets.BLUESKY_USERNAME }}
         BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
+        BLUESKY_BASE_URL: ${{ secrets.BLUESKY_BASE_URL }}
+        MATRIX_ACCESS_TOKEN: ${{ secrets.MATRIX_ACCESS_TOKEN }}
+        MATRIX_ROOM_ID: ${{ secrets.MATRIX_ROOM_ID }}
+        MATRIX_HOMESERVER: ${{ secrets.MATRIX_HOMESERVER }}
+        MATRIX_USER_ID: ${{ secrets.MATRIX_USER_ID }}
       run: python main.py
 
     - name: Commit changes

@@ -2,14 +2,21 @@ import os
 import markdown
 import json
 from bs4 import BeautifulSoup
-from BlueskySocialClient import bluesky_social_client
-from MastodonSocialClient import mastodon_social_client
 import re
+import yaml
+import importlib
 
+with open('plugins.yml', 'r') as file:
+    plugins_config = yaml.safe_load(file)
 
-bluesky_handle = bluesky_social_client(username=os.environ.get('BLUESKY_USERNAME'), password=os.environ.get('BLUESKY_PASSWORD'))
-mastodon_handle = mastodon_social_client(access_token=os.environ.get('MASTODON_ACCESS_TOKEN'))
-
+plugins = {}
+for plugin in plugins_config['plugins']:
+    if plugin['enabled']:
+        module_name, class_name = plugin['class'].rsplit('.', 1)
+        module = importlib.import_module(module_name)
+        plugin_class = getattr(module, class_name)
+        config = {key: os.environ.get(value) for key, value in plugin['config'].items()}
+        plugins[plugin['name']] = plugin_class(**config)
 
 
 class MetadataHeader:
@@ -48,9 +55,9 @@ def fetch_mention_hashtag(metadata, social_media):
         if match:
             values = match.group(1).split(',')
             if type == 'mention':
-                mentions = ' '.join([f"@{v}" for v in values])
+                mentions = values
             elif type == 'hashtag':
-                hashtags = ' '.join([f"#{v}" for v in values])
+                hashtags = values
     return mentions, hashtags
     
 
@@ -69,10 +76,7 @@ def process_markdown_files():
             stats = {}
             for channel in metadata.social_media:
                 mentions, hashtags = fetch_mention_hashtag(metadata, channel)
-                if channel == 'bluesky':
-                    stats[channel] = bluesky_handle.create_post(content, mentions, hashtags, metadata.images, metadata.alt_texts)
-                elif channel == 'mastodon':
-                    stats[channel] = mastodon_handle.create_post(content, mentions, hashtags, metadata.images, metadata.alt_texts)
+                stats[channel] = plugins[channel].create_post(content, mentions, hashtags, metadata.images, metadata.alt_texts)
             processed_files[file_name] = stats
             print(f'Processed {file_name}: {stats}')
     with open('processed_files.json', 'w') as file:

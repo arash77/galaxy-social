@@ -22,6 +22,8 @@ class mastodon_social_client:
 
         toot_id = None
         status = []
+        mentions = ' '.join([f"@{v}" for v in mentions])
+        hashtags = ' '.join([f"#{v}" for v in hashtags])
         for text in textwrap.wrap(content + '\n' + mentions + '\n' + hashtags, self.max_content_length, replace_whitespace=False):
             toot = self.mastodon_handle.status_post(status=text, in_reply_to_id=toot_id, media_ids=media_ids if (media_ids != [] and toot_id == None) else None)
             toot_id = toot.id

@@ -130,6 +130,8 @@ class bluesky_social_client:
         
         status = []
         reply_to = None
+        mentions = ' '.join([f"@{v}" for v in mentions])
+        hashtags = ' '.join([f"#{v}" for v in hashtags])
         for text in textwrap.wrap(content + '\n' + mentions + '\n' + hashtags, self.max_content_length, replace_whitespace=False):
             facets, last_url = self.parse_facets(text)
             if not images or reply_to:

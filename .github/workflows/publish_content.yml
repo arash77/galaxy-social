@@ -40,6 +40,8 @@ jobs:
         MATRIX_ROOM_ID: ${{ secrets.MATRIX_ROOM_ID }}
         MATRIX_HOMESERVER: ${{ secrets.MATRIX_HOMESERVER }}
         MATRIX_USER_ID: ${{ secrets.MATRIX_USER_ID }}
+        SLACK_ACCESS_TOKEN: ${{ secrets.SLACK_ACCESS_TOKEN }}
+        SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
       run: python main.py
 
     - name: Commit changes

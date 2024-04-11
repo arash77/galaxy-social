@@ -118,6 +118,8 @@ class bluesky_social_client:
 
 
     def create_post(self, content, mentions, hashtags, images, alt_texts):
+        if len(images) > len(alt_texts):
+            alt_texts += [''] * (len(images) - len(alt_texts))
         if images:
             embed_images = []
             for image in images[:4]:

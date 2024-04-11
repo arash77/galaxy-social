@@ -76,7 +76,6 @@ def process_markdown_files():
             stats = {}
             for channel in metadata.social_media:
                 mentions, hashtags = fetch_mention_hashtag(metadata, channel)
-                print(f'Processing {file_name} for {channel}')
                 stats[channel] = plugins[channel].create_post(content, mentions, hashtags, metadata.images, metadata.alt_texts)
             processed_files[file_name] = stats
             print(f'Processed {file_name}: {stats}')

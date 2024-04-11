@@ -30,8 +30,8 @@ class mastodon_social_client:
             for _ in range(3):
                 post = self.mastodon_handle.status(toot_id)
                 if post.content:
+                    post_content = BeautifulSoup(post.content, 'html.parser').get_text(separator=' ')
+                    status.append(''.join(post_content.split()) == ''.join(text.split()))
                     break
-            post_content = BeautifulSoup(post.content, 'html.parser').get_text(separator=' ')
-            status.append(''.join(post_content.split()) == ''.join(text.split()))
-        
+
         return all(status)

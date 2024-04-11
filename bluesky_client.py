@@ -143,8 +143,9 @@ class bluesky_social_client:
             for _ in range(5):
                 data = self.blueskysocial.get_posts([post.uri]).posts
                 if data:
+                    status.append(data[0].record.text == text)
                     break
-            status.append(data[0].record.text == text)
+                
 
             if reply_to is None:
                 root = atproto.models.create_strong_ref(post)

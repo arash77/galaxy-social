@@ -1,4 +1,3 @@
-# first draft
 plugins:
   - name: Mastodon
     class: mastodon_client.mastodon_social_client

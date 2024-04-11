@@ -16,7 +16,8 @@ class matrix_social_client:
         self.room_id = room_id
 
 
-    async def sync_create_post(self, text, mentions, images):
+    async def sync_create_post(self, text, mentions, hashtags=[], images=[], alt_texts=[]):
+        # hashtags and alt_texts are not used in this function
         if images:
             for image in images:
                 response = requests.get(image)

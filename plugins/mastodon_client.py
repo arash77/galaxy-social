@@ -9,16 +9,15 @@ class mastodon_social_client:
         self.max_content_length = 500
 
     def create_post(self, content, mentions, hashtags, images):
-        if images:
-            media_ids = []
-            for image in images[:4]:
-                response = requests.get(image['url'])
-                filename = image['url'].split('/')[-1]
-                if response.status_code == 200:
-                    with open(filename, 'wb') as f:
-                        f.write(response.content)
-                    media = self.mastodon_handle.media_post(media_file=filename, description=image['alt_text'] if 'alt_text' in image else None)
-                    media_ids.append(media['id'])
+        media_ids = []
+        for image in images[:4]:
+            response = requests.get(image['url'])
+            filename = image['url'].split('/')[-1]
+            if response.status_code == 200:
+                with open(filename, 'wb') as f:
+                    f.write(response.content)
+                media = self.mastodon_handle.media_post(media_file=filename, description=image['alt_text'] if 'alt_text' in image else None)
+                media_ids.append(media['id'])
 
         toot_id = None
         status = []

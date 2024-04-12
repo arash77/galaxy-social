@@ -117,17 +117,15 @@ class bluesky_social_client:
         return embed_external
 
 
-    def create_post(self, content, mentions, hashtags, images, alt_texts):
-        if len(images) > len(alt_texts):
-            alt_texts += [''] * (len(images) - len(alt_texts))
+    def create_post(self, content, mentions, hashtags, images):
         if images:
             embed_images = []
             for image in images[:4]:
-                response = requests.get(image)
+                response = requests.get(image['url'])
                 if response.status_code == 200:
                     img_data = response.content
                     upload = self.blueskysocial.com.atproto.repo.upload_blob(img_data)
-                    embed_images.append(atproto.models.AppBskyEmbedImages.Image(alt=alt_texts[images.index(image)], image=upload.blob))
+                    embed_images.append(atproto.models.AppBskyEmbedImages.Image(alt=image['alt_text'] if 'alt_text' in image else None, image=upload.blob))
             embed=atproto.models.AppBskyEmbedImages.Main(images=embed_images)
         
         status = []

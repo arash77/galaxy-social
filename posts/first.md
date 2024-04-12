@@ -1,9 +1,31 @@
 ---
-social_media: bluesky, mastodon, matrix, slack
-images: "https://techcrunch.com/wp-content/uploads/2023/08/bluesky-005.jpg", "https://galaxyproject.org/images/galaxy-logos/galaxy_project_logo.png"
-alt_texts: "A blue sky with a few clouds.", "Galaxy Project logo"
-mentions: bluesky[brilliantarash.bsky.social], mastodon[brilliantarash], matrix[brilliantarash:matrix.org]
-hashtags: bluesky[api, test], mastodon[api, test, galaxy]
+social_media:
+  - bluesky
+  - mastodon
+  - matrix
+  - slack
+
+images:
+  - url: https://techcrunch.com/wp-content/uploads/2023/08/bluesky-005.jpg
+  - url: https://galaxyproject.org/images/galaxy-logos/galaxy_project_logo.png
+    alt_text: Galaxy Project logo
+
+mentions:
+  bluesky:
+    - brilliantarash.bsky.social
+  mastodon:
+    - brilliantarash
+  matrix:
+    - brilliantarash:matrix.org
+
+hashtags:
+  bluesky:
+    - api
+    - test
+  mastodon:
+    - api
+    - test
+    - galaxy
 ---
 Lorem ipsum dolor sit amet, has ex hinc autem gubergren, ut mea oratio interesset, ea nostrud aliquid accusata mei. Stet unum timeam mel in, atqui zril persecuti ad usu, cetero abhorreant vituperatoribus ex pro. Accumsan omittantur definitionem et cum, solum debet mea no. Sit ex cibo illum posidonium, fugit choro sed ea. Mea id nostrum mediocritatem, ut quo harum possim. Vis facilisis interesset consequuntur ut, cu usu postea evertitur. Mea ut summo evertitur, cum fabulas definitiones id.
 https://galaxyproject.org/

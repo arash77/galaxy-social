@@ -8,18 +8,16 @@ class mastodon_social_client:
         self.mastodon_handle = Mastodon(access_token = kwargs.get('access_token'), api_base_url = base_url)
         self.max_content_length = 500
 
-    def create_post(self, content, mentions, hashtags, images, alt_texts):
-        if len(images) > len(alt_texts):
-            alt_texts += [''] * (len(images) - len(alt_texts))
+    def create_post(self, content, mentions, hashtags, images):
         if images:
             media_ids = []
             for image in images[:4]:
-                response = requests.get(image)
-                filename = image.split('/')[-1]
+                response = requests.get(image['url'])
+                filename = image['url'].split('/')[-1]
                 if response.status_code == 200:
                     with open(filename, 'wb') as f:
                         f.write(response.content)
-                    media = self.mastodon_handle.media_post(media_file=filename, description=alt_texts[images.index(image)])
+                    media = self.mastodon_handle.media_post(media_file=filename, description=image['alt_text'] if 'alt_text' in image else None)
                     media_ids.append(media['id'])
 
         toot_id = None

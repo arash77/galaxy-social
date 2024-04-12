@@ -75,7 +75,7 @@ class matrix_social_client:
         except:
             return False
     
-    def create_post(self, content, mentions, hashtags, images, alt_texts):
+    def create_post(self, content, mentions, hashtags, images):
         # hashtags and alt_texts are not used in this function
         result = asyncio.run(self.sync_create_post(content, mentions, images))
         return result

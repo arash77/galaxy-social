@@ -66,14 +66,14 @@ def fetch_mention_hashtag(metadata, social_media):
 
 def process_markdown_files():
     current_folder = os.path.dirname(os.path.abspath(__file__))
-    toots_folder = os.path.join(current_folder, 'toots')
+    posts_folder = os.path.join(current_folder, 'posts')
     processed_files = {}
     if os.path.exists('processed_files.json'):
         with open('processed_files.json', 'r') as file:
             processed_files = json.load(file)
-    for file_name in os.listdir(toots_folder):
-        if file_name.endswith('.toot') and not processed_files.get(file_name):
-            file_path = os.path.join(toots_folder, file_name)
+    for file_name in os.listdir(posts_folder):
+        if file_name.endswith('.md') and not processed_files.get(file_name):
+            file_path = os.path.join(posts_folder, file_name)
             content, metadata = parse_markdown_file(file_path)
             stats = {}
             for channel in metadata.social_media:

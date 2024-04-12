@@ -1,9 +1,0 @@
----
-social_media: bluesky, mastodon, matrix, slack
-images: "https://galaxyproject.org/images/galaxy-logos/galaxy_project_logo.png", "https://galaxyproject.org/images/galaxy-logos/galaxy_project_logo_blue.png"
-alt_texts: "Galaxy Logo", "Galaxy Logo in Blue"
-mentions: bluesky[brilliantarash.bsky.social], mastodon[brilliantarash], matrix[brilliantarash:matrix.org]
-hashtags: bluesky[galaxy, api, test], mastodon[api, test, galaxy]
----
-
-THIS IS A TEST POST!

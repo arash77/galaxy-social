@@ -15,7 +15,7 @@ for plugin in plugins_config['plugins']:
         module_name, class_name = plugin['class'].rsplit('.', 1)
         module = importlib.import_module('plugins.'+module_name)
         plugin_class = getattr(module, class_name)
-        config = {key: os.environ.get(value) for key, value in plugin['config'].items()}
+        config = {key: os.environ.get(value) for key, value in plugin['config'].items() if os.environ.get(value) is not None}
         plugins[plugin['name'].lower()] = plugin_class(**config)
 
 

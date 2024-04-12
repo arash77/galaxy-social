@@ -4,8 +4,8 @@ import textwrap
 import requests
 
 class mastodon_social_client:
-    def __init__(self, access_token=None, api_base_url='https://mstdn.science'):
-        self.mastodon_handle = Mastodon(access_token = access_token, api_base_url = api_base_url)
+    def __init__(self, base_url='https://mstdn.science', **kwargs):
+        self.mastodon_handle = Mastodon(access_token = kwargs.get('access_token'), api_base_url = base_url)
         self.max_content_length = 500
 
     def create_post(self, content, mentions, hashtags, images, alt_texts):

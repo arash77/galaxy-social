@@ -8,12 +8,12 @@ import asyncio
 
 class matrix_social_client:
 
-    def __init__(self, access_token=None, user_id=None, device_id=None, room_id=None, homeserver="https://matrix.org"):
-        self.client = AsyncClient(homeserver)
-        self.client.access_token = access_token
-        self.client.user_id = user_id
-        self.client.device_id = device_id
-        self.room_id = room_id
+    def __init__(self, base_url='https://matrix.org', **kwargs):
+        self.client = AsyncClient(base_url)
+        self.client.access_token = kwargs.get('access_token')
+        self.client.user_id = kwargs.get('user_id')
+        self.client.device_id = kwargs.get('device_id')
+        self.room_id = kwargs.get('room_id')
 
 
     async def sync_create_post(self, text, mentions, images):

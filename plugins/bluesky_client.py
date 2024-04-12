@@ -6,9 +6,9 @@ from bs4 import BeautifulSoup
 import textwrap
 
 class bluesky_social_client:
-    def __init__(self, base_url='https://bsky.social', username=None, password=None):
+    def __init__(self, base_url='https://bsky.social', **kwargs):
         self.blueskysocial = atproto.Client(base_url=base_url)
-        self.blueskysocial.login(login=username, password=password)
+        self.blueskysocial.login(login=kwargs.get('username'), password=kwargs.get('password'))
         self.max_content_length = 300
 
     def parse_mentions(self, text: str) -> List[Dict]:

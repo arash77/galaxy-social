@@ -3,24 +3,26 @@ plugins:
     class: mastodon_client.mastodon_social_client
     enabled: true
     config:
+      base_url: 'https://mstdn.science'
       access_token: MASTODON_ACCESS_TOKEN
-      api_base_url: MASTODON_API_BASE_URL
+      
 
   - name: Bluesky
     class: bluesky_client.bluesky_social_client
     enabled: true
     config:
+      base_url: 'https://bsky.social'
       username: BLUESKY_USERNAME
       password: BLUESKY_PASSWORD
-      base_url: BLUESKY_BASE_URL
+      
 
   - name: Matrix
     class: matrix_client.matrix_social_client
     enabled: true
-    config:    
+    config:
+      base_url: 'https://matrix.org'
       access_token: MATRIX_ACCESS_TOKEN
       room_id: MATRIX_ROOM_ID
-      homeserver: MATRIX_HOMESERVER
       user_id: MATRIX_USER_ID
   
   - name: Slack
@@ -29,11 +31,3 @@ plugins:
     config:
       access_token: SLACK_ACCESS_TOKEN
       channel_id: SLACK_CHANNEL_ID
-
-  - name: Linkedin
-    class: linkedin_client.linkedin_social_client
-    enabled: false
-    config:
-      access_token: LINKEDIN_ACCESS_TOKEN
-      api_base_url: LINKEDIN_API_BASE_URL
-      author: LINKEDIN_AUTHOR

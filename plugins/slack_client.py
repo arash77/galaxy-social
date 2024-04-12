@@ -3,9 +3,9 @@ import requests
 import os
 
 class slack_social_client:
-    def __init__(self, access_token=None, channel_id=None):
-        self.client = WebClient(token=access_token)
-        self.channel_id = channel_id
+    def __init__(self, **kwargs):
+        self.client = WebClient(token=kwargs.get('token'))
+        self.channel_id = kwargs.get('channel_id')
 
     def upload_images(self, images, alt_texts, text):
         uploaded_files = []

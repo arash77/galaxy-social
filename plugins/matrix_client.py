@@ -20,8 +20,8 @@ class matrix_social_client:
         
         if images:
             for image in images:
-                response = requests.get(image)
-                filename = image.split('/')[-1]
+                response = requests.get(image['url'])
+                filename = image['url'].split('/')[-1]
                 if response.status_code == 200:
                     with open(filename, 'wb') as f:
                         f.write(response.content)

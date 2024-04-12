@@ -16,6 +16,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: add processed_files
+      run: |
+        git fetch origin processed_files:processed_files
+        git checkout processed_files -- processed_files.json
+
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
@@ -46,4 +51,4 @@ jobs:
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
         file_pattern: 'processed_files.json'
-        branch: 'processed'
+        branch: 'processed_files'

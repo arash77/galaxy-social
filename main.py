@@ -25,8 +25,8 @@ def parse_markdown_file(file_path):
         content = file.read()
     metadata = yaml.safe_load(content.split('---')[1])
     metadata['social_media'] = [social_media.lower() for social_media in metadata['social_media']]
-    metadata['mentions'] = {key.lower(): value for key, value in metadata['mentions'].items()}
-    metadata['hashtags'] = {key.lower(): value for key, value in metadata['hashtags'].items()}
+    metadata['mentions'] = {key.lower(): value for key, value in metadata['mentions'].items()} if metadata.get('mentions') else {}
+    metadata['hashtags'] = {key.lower(): value for key, value in metadata['hashtags'].items()} if metadata.get('hashtags') else {}
     text = content.split('---')[2].lstrip('\n')
     markdown_content = markdown.markdown(text)
     plain_content = BeautifulSoup(markdown_content, 'html.parser').get_text(separator='\n')
@@ -47,9 +47,9 @@ def process_markdown_files():
             content, metadata = parse_markdown_file(file_path)
             stats = {}
             for social_media in metadata['social_media']:
-                mentions = metadata['mentions'].get(social_media, [])
-                hashtags = metadata['hashtags'].get(social_media, [])
-                images = metadata['images']
+                mentions = metadata.get('mentions', {}).get(social_media, [])
+                hashtags = metadata.get('hashtags', {}).get(social_media, [])
+                images = metadata.get('images', [])
                 stats[social_media] = plugins[social_media].create_post(content, mentions, hashtags, images)
             processed_files[file_name] = stats
             print(f'Processed {file_name}: {stats}')

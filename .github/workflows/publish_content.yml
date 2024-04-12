@@ -46,3 +46,4 @@ jobs:
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
         file_pattern: 'processed_files.json'
+        branch: 'main'

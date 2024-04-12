@@ -49,8 +49,10 @@ def parse_markdown_file(file_path):
         return plain_content, metadata
 
 def fetch_mention_hashtag(metadata, social_media):
-    mentions, hashtags = '', ''
+    mentions, hashtags = [], []
     for type, text in {'mention': metadata.mentions, 'hashtag': metadata.hashtags}.items():
+        if not text:
+            continue
         match = re.search(rf'{social_media}\[(.*?)\]', text)
         if match:
             values = match.group(1).split(',')

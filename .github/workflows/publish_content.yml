@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: add processed_files
+    - name: get published files cache
       run: |
         git fetch origin processed_files:processed_files
         git checkout processed_files -- processed_files.json

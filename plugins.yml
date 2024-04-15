@@ -5,7 +5,7 @@ plugins:
     config:
       base_url: 'https://mstdn.science'
       access_token: MASTODON_ACCESS_TOKEN
-      
+      max_content_length: 500
 
   - name: Bluesky
     class: bluesky_client.bluesky_social_client
@@ -14,7 +14,7 @@ plugins:
       base_url: 'https://bsky.social'
       username: BLUESKY_USERNAME
       password: BLUESKY_PASSWORD
-      
+      max_content_length: 300
 
   - name: Matrix
     class: matrix_client.matrix_social_client

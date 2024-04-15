@@ -12,7 +12,7 @@ class bluesky_social_client:
         self.blueskysocial.login(
             login=kwargs.get("username"), password=kwargs.get("password")
         )
-        self.max_content_length = 300
+        self.max_content_length = kwargs.get("max_content_length", 300)
 
     def parse_mentions(self, text: str) -> List[Dict]:
         spans = []

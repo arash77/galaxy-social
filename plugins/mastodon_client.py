@@ -9,7 +9,7 @@ class mastodon_social_client:
         self.mastodon_handle = Mastodon(
             access_token=kwargs.get("access_token"), api_base_url=base_url
         )
-        self.max_content_length = 500
+        self.max_content_length = kwargs.get("max_content_length", 500)
 
     def create_post(self, content, mentions, hashtags, images):
         media_ids = []

@@ -1,5 +1,5 @@
 ---
-social_media:
+media:
   - bluesky
   - mastodon
   - matrix

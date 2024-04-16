@@ -13,14 +13,29 @@ plugins = {}
 for plugin in plugins_config["plugins"]:
     if plugin["enabled"]:
         module_name, class_name = plugin["class"].rsplit(".", 1)
-        module = importlib.import_module(f"plugins.{module_name}")
-        plugin_class = getattr(module, class_name)
-        config = {
-            key: os.environ.get(value)
-            for key, value in plugin["config"].items()
-            if (not isinstance(value, int) and os.environ.get(value) is not None)
-        }
-        plugins[plugin["name"].lower()] = plugin_class(**config)
+        
+        try:
+            module = importlib.import_module(f"plugins.{module_name}")
+            plugin_class = getattr(module, class_name)
+        except ModuleNotFoundError:
+            print(f"Plugin {module_name}.{class_name} not found")
+            continue
+
+        try:
+            config = {
+                key: os.environ.get(value)
+                for key, value in plugin["config"].items()
+                if (not isinstance(value, int) and os.environ.get(value) is not None)
+            }
+        except KeyError:
+            print(f"Missing config for {module_name}.{class_name}")
+            continue
+
+        try:
+            plugins[plugin["name"].lower()] = plugin_class(**config)
+        except TypeError:
+            print(f"Invalid config for {module_name}.{class_name}")
+            continue
 
 
 def parse_markdown_file(file_path):

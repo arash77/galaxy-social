@@ -2,7 +2,7 @@
 import requests
 
 
-class linkedin_social_client:
+class linkedin_client:
     def __init__(
         self, access_token=None, api_base_url="https://api.linkedin.com/rest/"
     ):

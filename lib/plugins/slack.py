@@ -3,7 +3,7 @@ import requests
 import os
 
 
-class slack_social_client:
+class slack_client:
     def __init__(self, **kwargs):
         self.client = WebClient(token=kwargs.get("access_token"))
         self.channel_id = kwargs.get("channel_id")

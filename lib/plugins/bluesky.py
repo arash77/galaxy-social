@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import textwrap
 
 
-class bluesky_social_client:
+class bluesky_client:
     def __init__(self, base_url="https://bsky.social", **kwargs):
         self.blueskysocial = atproto.Client(base_url=base_url)
         self.blueskysocial.login(

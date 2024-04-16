@@ -7,7 +7,7 @@ from nio import AsyncClient, UploadResponse
 import asyncio
 
 
-class matrix_social_client:
+class matrix_client:
 
     def __init__(self, base_url="https://matrix.org", **kwargs):
         self.client = AsyncClient(base_url)

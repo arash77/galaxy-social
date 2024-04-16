@@ -4,7 +4,7 @@ import textwrap
 import requests
 
 
-class mastodon_social_client:
+class mastodon_client:
     def __init__(self, base_url="https://mstdn.science", **kwargs):
         self.mastodon_handle = Mastodon(
             access_token=kwargs.get("access_token"), api_base_url=base_url

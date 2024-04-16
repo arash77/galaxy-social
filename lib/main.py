@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import fnmatch
 import yaml
 import importlib
+import jsonschema
 
 with open("plugins.yml", "r") as file:
     plugins_config = yaml.safe_load(file)
@@ -13,7 +14,7 @@ plugins = {}
 for plugin in plugins_config["plugins"]:
     if plugin["enabled"]:
         module_name, class_name = plugin["class"].rsplit(".", 1)
-        
+
         try:
             module = importlib.import_module(f"plugins.{module_name}")
             plugin_class = getattr(module, class_name)
@@ -42,7 +43,15 @@ def parse_markdown_file(file_path):
     with open(file_path, "r") as file:
         content = file.read()
     _, metadata, text = content.split("---\n", 2)
-    metadata = yaml.safe_load(metadata)
+    try:
+        metadata = yaml.safe_load(metadata)
+        with open(".schema.yaml", "r") as f:
+            schema = yaml.safe_load(f)
+        jsonschema.validate(instance=metadata, schema=schema)
+    except:
+        print(f"Invalid metadata in {file_path}")
+        return None
+
     metadata["media"] = [media.lower() for media in metadata["media"]]
     metadata["mentions"] = (
         {key.lower(): value for key, value in metadata["mentions"].items()}

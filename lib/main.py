@@ -70,35 +70,40 @@ def parse_markdown_file(file_path):
     return plain_content, metadata
 
 
-def process_markdown_files():
+def process_markdown_file(file_path, processed_files):
+    content, metadata = parse_markdown_file(file_path)
+    stats = {}
+    for media in metadata["media"]:
+        if file_path in processed_files and media in processed_files[file_path]:
+            stats[media] = processed_files[file_path][media]
+            continue
+        mentions = metadata.get("mentions", {}).get(media, [])
+        hashtags = metadata.get("hashtags", {}).get(media, [])
+        images = metadata.get("images", [])
+        stats[media] = plugins[media].create_post(content, mentions, hashtags, images)
+    processed_files[file_path] = stats
+    print(f"Processed {file_path}: {stats}")
+    return processed_files
 
+
+def main():
     processed_files = {}
     if os.path.exists("processed_files.json"):
         with open("processed_files.json", "r") as file:
             processed_files = json.load(file)
-    if os.environ.get("CHANGED_FILES"):
-        changed_files = os.environ.get("CHANGED_FILES")
-        print(changed_files)
-    for root, _, files in os.walk("posts"):
-        for filename in fnmatch.filter(files, "*.md"):
-            file_path = os.path.join(root, filename)
-            content, metadata = parse_markdown_file(file_path)
-            stats = {}
-            for media in metadata["media"]:
-                if file_path in processed_files and media in processed_files[file_path]:
-                    stats[media] = processed_files[file_path][media]
-                    continue
-                mentions = metadata.get("mentions", {}).get(media, [])
-                hashtags = metadata.get("hashtags", {}).get(media, [])
-                images = metadata.get("images", [])
-                stats[media] = plugins[media].create_post(
-                    content, mentions, hashtags, images
-                )
-            processed_files[file_path] = stats
-            print(f"Processed {file_path}: {stats}")
+    changed_files = os.environ.get("CHANGED_FILES")
+    if changed_files:
+        for file_path in changed_files:
+            if file_path.endswith(".md"):
+                processed_files = process_markdown_file(file_path, processed_files)
+    else:
+        for root, _, files in os.walk("posts"):
+            for filename in fnmatch.filter(files, "*.md"):
+                file_path = os.path.join(root, filename)
+                processed_files = process_markdown_file(file_path, processed_files)
     with open("processed_files.json", "w") as file:
         json.dump(processed_files, file)
 
 
 if __name__ == "__main__":
-    process_markdown_files()
+    main()

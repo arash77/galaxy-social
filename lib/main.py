@@ -18,7 +18,7 @@ for plugin in plugins_config["plugins"]:
         config = {
             key: os.environ.get(value)
             for key, value in plugin["config"].items()
-            if os.environ.get(value) is not None
+            if (not isinstance(value, int) and os.environ.get(value) is not None)
         }
         plugins[plugin["name"].lower()] = plugin_class(**config)
 

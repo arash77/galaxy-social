@@ -4,6 +4,6 @@ beautifulsoup4==4.12.3
 Markdown==3.6
 Mastodon.py==1.8.1
 matrix-nio==0.24.0
-Pillow==9.0.1
-PyYAML==5.4.1
+Pillow==10.3.0
+PyYAML==6.0.1 
 slack_sdk==3.27.1

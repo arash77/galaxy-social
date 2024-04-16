@@ -47,17 +47,14 @@ def parse_markdown_file(file_path):
 
 
 def process_markdown_files():
-    current_folder = os.path.dirname(os.path.abspath(__file__))
-    posts_folder = os.path.join(current_folder, "posts")
-    print(f"Processing files in {posts_folder}")
 
     processed_files = {}
-    if os.path.exists("../processed_files.json"):
-        with open("../processed_files.json", "r") as file:
+    if os.path.exists("processed_files.json"):
+        with open("processed_files.json", "r") as file:
             processed_files = json.load(file)
             print(f"Loaded processed files: {processed_files}")
 
-    for root, _, files in os.walk(posts_folder):
+    for root, _, files in os.walk("posts"):
         print(os.path.join(root, filename))
         for filename in fnmatch.filter(files, "*.md"):
             file_path = os.path.join(root, filename)
@@ -75,7 +72,7 @@ def process_markdown_files():
                 )
             processed_files[file_path] = stats
             print(f"Processed {file_path}: {stats}")
-    with open("../processed_files.json", "w") as file:
+    with open("processed_files.json", "w") as file:
         json.dump(processed_files, file)
 
 

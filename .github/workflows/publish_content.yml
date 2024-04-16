@@ -1,10 +1,12 @@
 name: Publish Content
 
 on:
-  pull_request:
+  push:
     branches: [ "main" ]
-    types:
-      - closed
+  # pull_request:
+  #   branches: [ "main" ]
+  #   types:
+  #     - closed
 
 jobs:
   build:

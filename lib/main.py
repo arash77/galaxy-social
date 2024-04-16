@@ -55,7 +55,6 @@ def process_markdown_files():
             print(f"Loaded processed files: {processed_files}")
 
     for root, _, files in os.walk("posts"):
-        print(os.path.join(root, filename))
         for filename in fnmatch.filter(files, "*.md"):
             file_path = os.path.join(root, filename)
             content, metadata = parse_markdown_file(file_path)

@@ -13,7 +13,7 @@ plugins = {}
 for plugin in plugins_config["plugins"]:
     if plugin["enabled"]:
         module_name, class_name = plugin["class"].rsplit(".", 1)
-        module = importlib.import_module("plugins." + module_name)
+        module = importlib.import_module(f"plugins.{module_name}")
         plugin_class = getattr(module, class_name)
         config = {
             key: os.environ.get(value)

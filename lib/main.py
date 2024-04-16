@@ -49,6 +49,8 @@ def parse_markdown_file(file_path):
 def process_markdown_files():
     current_folder = os.path.dirname(os.path.abspath(__file__))
     posts_folder = os.path.join(current_folder, "posts")
+    print(f"Processing files in {posts_folder}")
+    
     processed_files = {}
     if os.path.exists("../processed_files.json"):
         with open("../processed_files.json", "r") as file:

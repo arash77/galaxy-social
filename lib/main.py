@@ -76,8 +76,9 @@ def process_markdown_files():
     if os.path.exists("processed_files.json"):
         with open("processed_files.json", "r") as file:
             processed_files = json.load(file)
-            print(f"Loaded processed files: {processed_files}")
-
+    if os.environ.get("CHANGED_FILES"):
+        changed_files = os.environ.get("CHANGED_FILES")
+        print(changed_files)
     for root, _, files in os.walk("posts"):
         for filename in fnmatch.filter(files, "*.md"):
             file_path = os.path.join(root, filename)

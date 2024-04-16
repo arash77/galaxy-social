@@ -41,7 +41,8 @@ for plugin in plugins_config["plugins"]:
 def parse_markdown_file(file_path):
     with open(file_path, "r") as file:
         content = file.read()
-    metadata = yaml.safe_load(content.split("---")[1])
+    _, metadata, text = content.split("---\n", 2)
+    metadata = yaml.safe_load(metadata)
     metadata["media"] = [media.lower() for media in metadata["media"]]
     metadata["mentions"] = (
         {key.lower(): value for key, value in metadata["mentions"].items()}
@@ -53,8 +54,7 @@ def parse_markdown_file(file_path):
         if metadata.get("hashtags")
         else {}
     )
-    text = content.split("---")[2].lstrip("\n")
-    markdown_content = markdown.markdown(text)
+    markdown_content = markdown.markdown(text.strip())
     plain_content = BeautifulSoup(markdown_content, "html.parser").get_text(
         separator="\n"
     )

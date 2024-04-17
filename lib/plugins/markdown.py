@@ -16,6 +16,7 @@ class markdown_client:
             hashtags = " ".join([f"#{v}" for v in hashtags])
             text = f"{content}\n{mentions}\n{hashtags}\n{medias}"
             if self.save_path:
+                os.makedirs(self.save_path, exist_ok=True)
                 with open(
                     f"{self.save_path}/{time.strftime('%Y%m%d-%H%M%S')}.md", "w"
                 ) as f:

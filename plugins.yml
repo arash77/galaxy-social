@@ -36,4 +36,4 @@ plugins:
     class: markdown.markdown_client
     enabled: true
     config:
-      save_path: 500
+      save_path: "markdown_cache"

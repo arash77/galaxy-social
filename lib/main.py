@@ -96,6 +96,7 @@ def main():
         with open("processed_files.json", "r") as file:
             processed_files = json.load(file)
     changed_files = os.environ.get("CHANGED_FILES")
+    print(f"Changed files: {changed_files}")
     if changed_files:
         for file_path in changed_files:
             if file_path.endswith(".md"):

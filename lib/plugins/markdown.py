@@ -20,6 +20,7 @@ class markdown_client:
                     f"{self.save_path}/{time.strftime('%Y%m%d-%H%M%S')}.md", "w"
                 ) as f:
                     f.write(text)
+            print(os.getenv("PREVIEW"))
             if os.getenv("PREVIEW"):
                 github_token = os.getenv("GITHUB_TOKEN")
                 repo_owner, repo_name = os.getenv("GITHUB_REPOSITORY").split("/")
@@ -33,7 +34,7 @@ class markdown_client:
                 data = {"body": text}
                 response = requests.post(url, headers=headers, json=data)
                 if response.status_code != 201:
-                    return False
+                    raise Exception("Failed to create comment")
             return True
         except:
             return False

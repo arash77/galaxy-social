@@ -12,7 +12,7 @@ with open("plugins.yml", "r") as file:
 
 plugins = {}
 for plugin in plugins_config["plugins"]:
-    if os.getenv("PREVIEW") and plugin["name"] != "markdown":
+    if os.getenv("PREVIEW") and plugin["name"].lower() != "markdown":
         continue
 
     if plugin["enabled"]:
@@ -52,6 +52,12 @@ def parse_markdown_file(file_path):
         raise Exception(f"Invalid metadata in {file_path}")
 
     metadata["media"] = [media.lower() for media in metadata["media"]]
+
+    for media in metadata["media"]:
+        if not any(item["name"].lower() == media for item in plugins_config["plugins"]):
+            raise Exception(f"Invalid media {media}")
+
+    
     metadata["mentions"] = (
         {key.lower(): value for key, value in metadata["mentions"].items()}
         if metadata.get("mentions")
@@ -72,6 +78,12 @@ def parse_markdown_file(file_path):
 def process_markdown_file(file_path, processed_files):
     content, metadata = parse_markdown_file(file_path)
     stats = {}
+    if os.getenv("PREVIEW"):
+        try:
+            plugins["markdown"].create_post(content, [], [], metadata.get("images", []), media = metadata["media"])
+            return processed_files
+        except:
+            raise Exception(f"Failed to create preview for {file_path}")
     for media in metadata["media"]:
         if file_path in processed_files and media in processed_files[file_path]:
             stats[media] = processed_files[file_path][media]
@@ -79,12 +91,7 @@ def process_markdown_file(file_path, processed_files):
         mentions = metadata.get("mentions", {}).get(media, [])
         hashtags = metadata.get("hashtags", {}).get(media, [])
         images = metadata.get("images", [])
-        print(f"Processing {os.getenv('PREVIEW')} for {media}")
-        if not os.getenv("PREVIEW") or media == "markdown":
-            print(f"Creating post for {media}")
-            stats[media] = plugins[media].create_post(
-                content, mentions, hashtags, images
-            )
+        stats[media] = plugins[media].create_post(content, mentions, hashtags, images)
     processed_files[file_path] = stats
     print(f"Processed {file_path}: {stats}")
     return processed_files
@@ -97,10 +104,7 @@ def main():
             processed_files = json.load(file)
     changed_files = os.environ.get("CHANGED_FILES")
     if changed_files:
-        print(type(changed_files))
-        print(f"Changed files: {changed_files}")
-        for file_path in changed_files:
-            print(f"Processing {file_path}")
+        for file_path in eval(changed_files.replace("\\", "")):
             if file_path.endswith(".md"):
                 processed_files = process_markdown_file(file_path, processed_files)
     else:

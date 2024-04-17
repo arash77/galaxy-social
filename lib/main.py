@@ -80,7 +80,8 @@ def process_markdown_file(file_path, processed_files):
         mentions = metadata.get("mentions", {}).get(media, [])
         hashtags = metadata.get("hashtags", {}).get(media, [])
         images = metadata.get("images", [])
-        stats[media] = plugins[media].create_post(content, mentions, hashtags, images)
+        if not os.getenv("PREVIEW") or media == "markdown":
+            stats[media] = plugins[media].create_post(content, mentions, hashtags, images)
     processed_files[file_path] = stats
     print(f"Processed {file_path}: {stats}")
     return processed_files

@@ -50,6 +50,10 @@ def parse_markdown_file(file_path):
         jsonschema.validate(instance=metadata, schema=schema)
     except:
         raise Exception(f"Invalid metadata in {file_path}")
+    
+    for media in metadata["media"]:
+        if media not in plugins:
+            raise Exception(f"Invalid media {media}")
 
     metadata["media"] = [media.lower() for media in metadata["media"]]
     metadata["mentions"] = (

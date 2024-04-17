@@ -15,7 +15,7 @@ class markdown_client:
             mentions = " ".join([f"@{v}" for v in mentions])
             hashtags = " ".join([f"#{v}" for v in hashtags])
             social_media = ", ".join(kwargs.get("media"))
-            text = f"This is a preview that will be posted to: {social_media}:\n\n{content}\n{mentions}\n{hashtags}\n{medias}"
+            text = f"This is a preview that will be posted to {social_media}:\n\n{content}\n{mentions}\n{hashtags}\n{medias}"
             if self.save_path:
                 os.makedirs(self.save_path, exist_ok=True)
                 with open(

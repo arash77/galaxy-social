@@ -12,10 +12,11 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - id: get_changed_files
-        name: Get changed markdown files in posts
+      - name: Get changed markdown files in posts
+        id: get_changed_files
         uses: tj-actions/changed-files@v44
         with:
           files: posts/**.md

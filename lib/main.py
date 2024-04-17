@@ -50,7 +50,7 @@ def parse_markdown_file(file_path):
         jsonschema.validate(instance=metadata, schema=schema)
     except:
         raise Exception(f"Invalid metadata in {file_path}")
-    
+
     for media in metadata["media"]:
         if media not in plugins:
             raise Exception(f"Invalid media {media}")
@@ -76,6 +76,10 @@ def parse_markdown_file(file_path):
 def process_markdown_file(file_path, processed_files):
     content, metadata = parse_markdown_file(file_path)
     stats = {}
+    if os.getenv("PREVIEW"):
+        plugins["markdown"].create_post(content, [], [], metadata.get("images", []))
+        return processed_files
+
     for media in metadata["media"]:
         if file_path in processed_files and media in processed_files[file_path]:
             stats[media] = processed_files[file_path][media]
@@ -83,12 +87,7 @@ def process_markdown_file(file_path, processed_files):
         mentions = metadata.get("mentions", {}).get(media, [])
         hashtags = metadata.get("hashtags", {}).get(media, [])
         images = metadata.get("images", [])
-        print(f"Processing {os.getenv('PREVIEW')} for {media}")
-        if not os.getenv("PREVIEW") or media == "markdown":
-            print(f"Creating post for {media}")
-            stats[media] = plugins[media].create_post(
-                content, mentions, hashtags, images
-            )
+        stats[media] = plugins[media].create_post(content, mentions, hashtags, images)
     processed_files[file_path] = stats
     print(f"Processed {file_path}: {stats}")
     return processed_files
@@ -102,7 +101,6 @@ def main():
     changed_files = os.environ.get("CHANGED_FILES")
     if changed_files:
         for file_path in eval(changed_files.replace("\\", "")):
-            print(f"Processing {file_path}")
             if file_path.endswith(".md"):
                 processed_files = process_markdown_file(file_path, processed_files)
     else:

@@ -1,6 +1,6 @@
 ---
 media:
-  - slac
+  - slack
 
 images:
   - url: https://techcrunch.com/wp-content/uploads/2023/08/bluesky-005.jpg

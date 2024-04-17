@@ -7,14 +7,15 @@ class markdown_client:
     def __init__(self, **kwargs):
         self.save_path = kwargs.get("save_path")
 
-    def create_post(self, content, mentions, hashtags, images):
+    def create_post(self, content, mentions, hashtags, images, **kwargs):
         try:
             medias = "\n".join(
                 [f'![{image.get("alt_text", "")}]({image["url"]})' for image in images]
             )
             mentions = " ".join([f"@{v}" for v in mentions])
             hashtags = " ".join([f"#{v}" for v in hashtags])
-            text = f"{content}\n{mentions}\n{hashtags}\n{medias}"
+            social_media = ", ".join(kwargs.get("media"))
+            text = f"This is a preview that will be posted to: {social_media}:\n\n{content}\n{mentions}\n{hashtags}\n{medias}"
             if self.save_path:
                 os.makedirs(self.save_path, exist_ok=True)
                 with open(

@@ -12,7 +12,7 @@ with open("plugins.yml", "r") as file:
 
 plugins = {}
 for plugin in plugins_config["plugins"]:
-    if os.getenv("PREVIEW") and plugin["name"] != "markdown":
+    if os.getenv("PREVIEW") and plugin["name"].lower() != "markdown":
         continue
 
     if plugin["enabled"]:
@@ -51,11 +51,14 @@ def parse_markdown_file(file_path):
     except:
         raise Exception(f"Invalid metadata in {file_path}")
 
+    metadata["media"] = [media.lower() for media in metadata["media"]]
+    
     for media in metadata["media"]:
-        if not any(item["name"] == media for item in plugins_config["plugins"]):
+        print(plugins_config["plugins"])
+        if not any(item["name"].lower() == media for item in plugins_config["plugins"]):
             raise Exception(f"Invalid media {media}")
 
-    metadata["media"] = [media.lower() for media in metadata["media"]]
+    
     metadata["mentions"] = (
         {key.lower(): value for key, value in metadata["mentions"].items()}
         if metadata.get("mentions")

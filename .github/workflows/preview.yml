@@ -39,6 +39,6 @@ jobs:
         env:
           CHANGED_FILES: ${{ steps.get_changed_files.outputs.added_modified }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PREVIEW: True
+          PREVIEW: "True"
         run: python -u lib/main.py
 

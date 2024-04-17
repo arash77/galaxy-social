@@ -97,10 +97,9 @@ def main():
             processed_files = json.load(file)
     changed_files = os.environ.get("CHANGED_FILES")
     if changed_files:
-        for file_path in changed_files:
+        for file_path in json.loads(changed_files):
             print(f"Processing {file_path}")
             if file_path.endswith(".md"):
-                print(f"Processing {file_path}")
                 processed_files = process_markdown_file(file_path, processed_files)
     else:
         for root, _, files in os.walk("posts"):

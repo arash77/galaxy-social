@@ -33,7 +33,7 @@ class markdown_client:
                 data = {"body": text}
                 response = requests.post(url, headers=headers, json=data)
                 if response.status_code != 201:
-                    return False
+                    raise Exception("Failed to create comment")
             return True
         except:
             return False

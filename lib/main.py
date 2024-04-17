@@ -14,7 +14,7 @@ plugins = {}
 for plugin in plugins_config["plugins"]:
     if os.getenv("PREVIEW") and plugin["name"] != "markdown":
         continue
-    
+
     if plugin["enabled"]:
         module_name, class_name = plugin["class"].rsplit(".", 1)
 
@@ -22,7 +22,7 @@ for plugin in plugins_config["plugins"]:
             module = importlib.import_module(f"plugins.{module_name}")
             plugin_class = getattr(module, class_name)
         except ModuleNotFoundError:
-            raise f"Plugin {module_name}.{class_name} not found"
+            raise RuntimeError(f"Plugin {module_name}.{class_name} not found")
 
         try:
             config = {
@@ -31,12 +31,12 @@ for plugin in plugins_config["plugins"]:
                 if (not isinstance(value, int) and os.environ.get(value) is not None)
             }
         except KeyError:
-            raise f"Missing config for {module_name}.{class_name}"
+            raise RuntimeError(f"Missing config for {module_name}.{class_name}")
 
         try:
             plugins[plugin["name"].lower()] = plugin_class(**config)
         except TypeError:
-            raise f"Invalid config for {module_name}.{class_name}."
+            raise RuntimeError(f"Invalid config for {module_name}.{class_name}.")
 
 
 def parse_markdown_file(file_path):
@@ -49,7 +49,7 @@ def parse_markdown_file(file_path):
             schema = yaml.safe_load(f)
         jsonschema.validate(instance=metadata, schema=schema)
     except:
-        raise f"Invalid metadata in {file_path}"
+        raise Exception(f"Invalid metadata in {file_path}")
 
     metadata["media"] = [media.lower() for media in metadata["media"]]
     metadata["mentions"] = (
@@ -80,7 +80,9 @@ def process_markdown_file(file_path, processed_files):
         hashtags = metadata.get("hashtags", {}).get(media, [])
         images = metadata.get("images", [])
         if not os.getenv("PREVIEW") or media == "markdown":
-            stats[media] = plugins[media].create_post(content, mentions, hashtags, images)
+            stats[media] = plugins[media].create_post(
+                content, mentions, hashtags, images
+            )
     processed_files[file_path] = stats
     print(f"Processed {file_path}: {stats}")
     return processed_files

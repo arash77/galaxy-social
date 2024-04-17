@@ -12,26 +12,29 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: get published files cache
-        run: |
-          git fetch origin processed_files:processed_files
-          git checkout processed_files -- processed_files.json
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: 3.9
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-
       - id: get_changed_files
         name: Get changed markdown files in posts
         uses: tj-actions/changed-files@v44
         with:
           files: posts/**.md
+
+      - name: get published files cache
+        if: steps.get_changed_files.outputs.any_changed == 'true'
+        run: |
+          git fetch origin processed_files:processed_files
+          git checkout processed_files -- processed_files.json
+
+      - name: Set up Python
+        if: steps.get_changed_files.outputs.any_changed == 'true'
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        if: steps.get_changed_files.outputs.any_changed == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
       - name: Run script to publish contents
         if: steps.get_changed_files.outputs.any_changed == 'true'

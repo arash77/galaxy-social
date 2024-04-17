@@ -71,7 +71,6 @@ def parse_markdown_file(file_path):
 
 def process_markdown_file(file_path, processed_files):
     content, metadata = parse_markdown_file(file_path)
-    print(f'metadata: {metadata}')
     stats = {}
     for media in metadata["media"]:
         if file_path in processed_files and media in processed_files[file_path]:
@@ -99,7 +98,9 @@ def main():
     changed_files = os.environ.get("CHANGED_FILES")
     if changed_files:
         for file_path in changed_files:
+            print(f"Processing {file_path}")
             if file_path.endswith(".md"):
+                print(f"Processing {file_path}")
                 processed_files = process_markdown_file(file_path, processed_files)
     else:
         for root, _, files in os.walk("posts"):

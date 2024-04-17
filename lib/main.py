@@ -12,6 +12,9 @@ with open("plugins.yml", "r") as file:
 
 plugins = {}
 for plugin in plugins_config["plugins"]:
+    if os.getenv("PREVIEW") and plugin["name"] != "markdown":
+        continue
+    
     if plugin["enabled"]:
         module_name, class_name = plugin["class"].rsplit(".", 1)
 
@@ -19,8 +22,7 @@ for plugin in plugins_config["plugins"]:
             module = importlib.import_module(f"plugins.{module_name}")
             plugin_class = getattr(module, class_name)
         except ModuleNotFoundError:
-            print(f"Plugin {module_name}.{class_name} not found")
-            continue
+            raise f"Plugin {module_name}.{class_name} not found"
 
         try:
             config = {
@@ -29,14 +31,12 @@ for plugin in plugins_config["plugins"]:
                 if (not isinstance(value, int) and os.environ.get(value) is not None)
             }
         except KeyError:
-            print(f"Missing config for {module_name}.{class_name}")
-            continue
+            raise f"Missing config for {module_name}.{class_name}"
 
         try:
             plugins[plugin["name"].lower()] = plugin_class(**config)
         except TypeError:
-            print(f"Invalid config for {module_name}.{class_name}")
-            continue
+            raise f"Invalid config for {module_name}.{class_name}."
 
 
 def parse_markdown_file(file_path):
@@ -49,8 +49,7 @@ def parse_markdown_file(file_path):
             schema = yaml.safe_load(f)
         jsonschema.validate(instance=metadata, schema=schema)
     except:
-        print(f"Invalid metadata in {file_path}")
-        return None
+        raise f"Invalid metadata in {file_path}"
 
     metadata["media"] = [media.lower() for media in metadata["media"]]
     metadata["mentions"] = (

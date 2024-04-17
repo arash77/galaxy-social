@@ -6,7 +6,6 @@ import fnmatch
 import yaml
 import importlib
 import jsonschema
-import ast
 
 with open("plugins.yml", "r") as file:
     plugins_config = yaml.safe_load(file)
@@ -98,7 +97,7 @@ def main():
             processed_files = json.load(file)
     changed_files = os.environ.get("CHANGED_FILES")
     if changed_files:
-        for file_path in ast.literal_eval(changed_files.replace("\\", "")):
+        for file_path in eval(changed_files.replace("\\", "")):
             print(f"Processing {file_path}")
             if file_path.endswith(".md"):
                 processed_files = process_markdown_file(file_path, processed_files)

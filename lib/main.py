@@ -52,7 +52,7 @@ def parse_markdown_file(file_path):
         raise Exception(f"Invalid metadata in {file_path}")
 
     for media in metadata["media"]:
-        if media not in plugins:
+        if not any(item["name"] == media for item in plugins_config["plugins"]):
             raise Exception(f"Invalid media {media}")
 
     metadata["media"] = [media.lower() for media in metadata["media"]]
@@ -77,9 +77,11 @@ def process_markdown_file(file_path, processed_files):
     content, metadata = parse_markdown_file(file_path)
     stats = {}
     if os.getenv("PREVIEW"):
-        plugins["markdown"].create_post(content, [], [], metadata.get("images", []))
-        return processed_files
-
+        try:
+            plugins["markdown"].create_post(content, [], [], metadata.get("images", []))
+            return processed_files
+        except:
+            raise Exception(f"Failed to create preview for {file_path}")
     for media in metadata["media"]:
         if file_path in processed_files and media in processed_files[file_path]:
             stats[media] = processed_files[file_path][media]
@@ -101,6 +103,7 @@ def main():
     changed_files = os.environ.get("CHANGED_FILES")
     if changed_files:
         for file_path in eval(changed_files.replace("\\", "")):
+            print(f"Processing {file_path}")
             if file_path.endswith(".md"):
                 processed_files = process_markdown_file(file_path, processed_files)
     else:

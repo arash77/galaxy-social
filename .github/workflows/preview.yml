@@ -30,14 +30,15 @@ jobs:
           python -m pip install -r requirements.txt
 
       - id: get_changed_files
-        name: Get changed files
-        uses: jitterbit/get-changed-files@v1
+        name: Get changed markdown files in posts
+        uses: tj-actions/changed-files@v44
         with:
-          format: "json"
+          files: posts/**.md
 
       - name: Run script to create preview
+        if: steps.get_changed_files.outputs.any_changed == 'true'
         env:
-          CHANGED_FILES: ${{ steps.get_changed_files.outputs.added_modified }}
+          CHANGED_FILES: ${{ steps.get_changed_files.outputs.all_changed_files }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PREVIEW: "True"
         run: python -u lib/main.py

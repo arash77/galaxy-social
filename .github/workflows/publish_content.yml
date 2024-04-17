@@ -28,12 +28,13 @@ jobs:
           python -m pip install -r requirements.txt
 
       - id: get_changed_files
-        name: Get changed files
-        uses: jitterbit/get-changed-files@v1
+        name: Get changed markdown files in posts
+        uses: tj-actions/changed-files@v44
         with:
-          format: "json"
+          files: posts/**.md
 
       - name: Run script to publish contents
+        if: steps.get_changed_files.outputs.any_changed == 'true'
         env:
           MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
           BLUESKY_USERNAME: ${{ secrets.BLUESKY_USERNAME }}
@@ -43,10 +44,11 @@ jobs:
           MATRIX_USER_ID: ${{ secrets.MATRIX_USER_ID }}
           SLACK_ACCESS_TOKEN: ${{ secrets.SLACK_ACCESS_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
-          CHANGED_FILES: ${{ steps.get_changed_files.outputs.added_modified }}
+          CHANGED_FILES: ${{ steps.get_changed_files.outputs.all_changed_files }}
         run: python -u lib/main.py
 
       - name: Commit changes
+        if: steps.get_changed_files.outputs.any_changed == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: "processed_files.json"

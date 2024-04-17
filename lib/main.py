@@ -71,6 +71,7 @@ def parse_markdown_file(file_path):
 
 def process_markdown_file(file_path, processed_files):
     content, metadata = parse_markdown_file(file_path)
+    print(f'metadata: {metadata}')
     stats = {}
     for media in metadata["media"]:
         if file_path in processed_files and media in processed_files[file_path]:
@@ -96,7 +97,6 @@ def main():
         with open("processed_files.json", "r") as file:
             processed_files = json.load(file)
     changed_files = os.environ.get("CHANGED_FILES")
-    print(f"Changed files: {changed_files}")
     if changed_files:
         for file_path in changed_files:
             if file_path.endswith(".md"):

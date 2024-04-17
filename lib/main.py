@@ -97,6 +97,7 @@ def main():
             processed_files = json.load(file)
     changed_files = os.environ.get("CHANGED_FILES")
     if changed_files:
+        changed_files.replace("\\", "")
         print(f"Changed files: {changed_files}")
         for file_path in eval(changed_files):
             print(f"Processing {file_path}")

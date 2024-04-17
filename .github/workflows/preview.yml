@@ -15,11 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Get changed markdown files in posts
+      - name: Get changed files in posts folder
         id: get_changed_files
         uses: tj-actions/changed-files@v44
         with:
-          files: posts/**.md
+          files: posts/**
 
       - name: get published files cache
         if: steps.get_changed_files.outputs.any_changed == 'true'

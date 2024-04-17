@@ -97,9 +97,9 @@ def main():
             processed_files = json.load(file)
     changed_files = os.environ.get("CHANGED_FILES")
     if changed_files:
-        changed_files.replace("\\", "")
+        print(type(changed_files))
         print(f"Changed files: {changed_files}")
-        for file_path in eval(changed_files):
+        for file_path in changed_files:
             print(f"Processing {file_path}")
             if file_path.endswith(".md"):
                 processed_files = process_markdown_file(file_path, processed_files)

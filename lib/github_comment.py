@@ -15,7 +15,7 @@ def comment_to_github(comment_text, error=False):
     data = {"body": comment_text}
     response = requests.post(url, headers=headers, json=data)
     if response.status_code != 201:
-        raise Exception("Failed to create comment")
+        raise Exception(f"Failed to create comment on github: {response.text}")
     else:
         if error:
             raise Exception(comment_text)

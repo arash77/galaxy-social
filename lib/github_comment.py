@@ -6,8 +6,9 @@ def comment_to_github(comment_text, error=False):
     github_token = os.getenv("GITHUB_TOKEN")
     repo_owner, repo_name = os.getenv("GITHUB_REPOSITORY").split("/")
     pr_number = os.getenv("GITHUB_REF_NAME").split("/")[0]
-    ref_name = os.getenv("GITHUB_REF_NAME")
-    print(f"Commenting on PR {ref_name}")
+    event = os.getenv("GITHUB_EVENT_PATH")
+    ref = os.getenv("GITHUB_REF")
+    print(f"Commenting on PR {event}, {ref}")
     headers = {
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {github_token}",

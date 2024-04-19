@@ -44,6 +44,7 @@ class slack_client:
 
     def create_post(self, text, mentions, hashtags, images):
         status = []
+        link = None
         if self.max_content_length < len(text):
             parent_ts = None
             for text in textwrap.wrap(

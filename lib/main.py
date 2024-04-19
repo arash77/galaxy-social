@@ -23,7 +23,7 @@ for plugin in plugins_config["plugins"]:
             module = importlib.import_module(f"plugins.{module_name}")
             plugin_class = getattr(module, class_name)
         except:
-            comment_to_github(f"Plugin {module_name}.{class_name} not found", error=True)
+            comment_to_github(f"Error with plugin {module_name}.{class_name}.", error=True)
 
         try:
             config = {
@@ -32,7 +32,7 @@ for plugin in plugins_config["plugins"]:
                 if (not isinstance(value, int) and os.environ.get(value) is not None)
             }
         except:
-            comment_to_github(f"Missing config for {module_name}.{class_name}", error=True)
+            comment_to_github(f"Missing config for {module_name}.{class_name}.", error=True)
 
         try:
             plugins[plugin["name"].lower()] = plugin_class(**config)
@@ -51,13 +51,13 @@ def parse_markdown_file(file_path):
             schema = yaml.safe_load(f)
         jsonschema.validate(instance=metadata, schema=schema)
     except:
-        comment_to_github(f"Invalid metadata in {file_path}", error=True)
+        comment_to_github(f"Invalid metadata in {file_path}.", error=True)
 
     metadata["media"] = [media.lower() for media in metadata["media"]]
 
     for media in metadata["media"]:
         if not any(item["name"].lower() == media for item in plugins_config["plugins"]):
-            comment_to_github(f"Invalid media {media}", error=True)
+            comment_to_github(f"Invalid media {media}.", error=True)
 
     
     metadata["mentions"] = (
@@ -83,7 +83,7 @@ def process_markdown_file(file_path, processed_files):
             plugins["markdown"].create_post(content, [], [], metadata.get("images", []), media = metadata["media"])
             return processed_files
         except:
-            comment_to_github(f"Failed to create preview for {file_path}", error=True)
+            comment_to_github(f"Failed to create preview for {file_path}.", error=True)
     stats = {}
     url = {}
     for media in metadata["media"]:

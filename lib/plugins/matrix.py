@@ -5,7 +5,6 @@ import magic
 from PIL import Image
 from nio import AsyncClient, UploadResponse
 import asyncio
-from github_comment import comment_to_github
 
 class matrix_client:
 
@@ -60,7 +59,7 @@ class matrix_client:
                     self.room_id, message_type="m.room.message", content=content
                 )
             except:
-                comment_to_github("Failed to send image", error=True)
+                return False, None
 
         if mentions:
             text = (
@@ -81,7 +80,7 @@ class matrix_client:
             message_id = response.event_id
             link = f"https://matrix.to/#/{self.room_id}/{message_id}"
         except:
-            comment_to_github("Failed to send message", error=True)
+            return False, None
         
         return True, link
 

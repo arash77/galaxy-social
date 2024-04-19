@@ -1,4 +1,5 @@
 import os
+import sys
 import markdown
 import json
 from bs4 import BeautifulSoup
@@ -13,7 +14,7 @@ with open("plugins.yml", "r") as file:
 
 plugins = {}
 for plugin in plugins_config["plugins"]:
-    if os.getenv("PREVIEW") and plugin["name"].lower() != "markdown":
+    if 'preview' in sys.argv and plugin["name"].lower() != "markdown":
         continue
 
     if plugin["enabled"]:
@@ -83,7 +84,7 @@ def parse_markdown_file(file_path):
 
 def process_markdown_file(file_path, processed_files):
     content, metadata = parse_markdown_file(file_path)
-    if os.getenv("PREVIEW"):
+    if 'preview' in sys.argv:
         try:
             plugins["markdown"].create_post(
                 content, [], [], metadata.get("images", []), media=metadata["media"]

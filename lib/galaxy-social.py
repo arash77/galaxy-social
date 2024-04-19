@@ -127,7 +127,7 @@ def main():
                 response = requests.get(raw_url)
                 if response.status_code == 200:
                     with open(file["filename"], "w") as f:
-                        f.write()
+                        f.write(response.text)
                         
     processed_files = {}
     if os.path.exists("processed_files.json"):

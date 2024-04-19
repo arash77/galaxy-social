@@ -50,6 +50,7 @@ jobs:
           SLACK_ACCESS_TOKEN: ${{ secrets.SLACK_ACCESS_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
           CHANGED_FILES: ${{ steps.get_changed_files.outputs.all_changed_files }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python -u lib/main.py
 
       - name: Commit changes

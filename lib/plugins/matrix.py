@@ -5,18 +5,19 @@ import magic
 from PIL import Image
 from nio import AsyncClient, UploadResponse
 import asyncio
-
+from lib.github_comment import comment_to_github
 
 class matrix_client:
 
-    def __init__(self, base_url="https://matrix.org", **kwargs):
-        self.client = AsyncClient(base_url)
+    def __init__(self, **kwargs):
+        self.base_url = kwargs.get("base_url", "https://matrix.org")
+        self.client = AsyncClient(self.base_url)
         self.client.access_token = kwargs.get("access_token")
         self.client.user_id = kwargs.get("user_id")
         self.client.device_id = kwargs.get("device_id")
         self.room_id = kwargs.get("room_id")
 
-    async def sync_create_post(self, text, mentions, images):
+    async def async_create_post(self, text, mentions, images):
         for image in images:
             response = requests.get(image["url"])
             filename = image["url"].split("/")[-1]
@@ -25,12 +26,12 @@ class matrix_client:
                     f.write(response.content)
             mime_type = magic.from_file(filename, mime=True)
             if not mime_type.startswith("image/"):
-                return
+                continue
 
             (width, height) = Image.open(filename).size
             file_stat = await aiofiles.os.stat(filename)
             async with aiofiles.open(filename, "r+b") as f:
-                resp, maybe_keys = await self.client.upload(
+                resp, _ = await self.client.upload(
                     f,
                     content_type=mime_type,
                     filename=os.path.basename(filename),
@@ -38,7 +39,7 @@ class matrix_client:
                 )
 
             if not isinstance(resp, UploadResponse):
-                return False
+                continue
 
             content = {
                 "body": os.path.basename(filename),
@@ -59,7 +60,7 @@ class matrix_client:
                     self.room_id, message_type="m.room.message", content=content
                 )
             except:
-                return False
+                comment_to_github("Failed to send image", error=True)
 
         if mentions:
             text = (
@@ -73,15 +74,18 @@ class matrix_client:
             "body": text,
         }
         try:
-            await self.client.room_send(
+            response = await self.client.room_send(
                 self.room_id, message_type="m.room.message", content=content
             )
             await self.client.close()
-            return True
+            message_id = response.event_id
+            link = f"https://matrix.to/#/{self.room_id}/{message_id}"
         except:
-            return False
+            comment_to_github("Failed to send message", error=True)
+        
+        return True, link
 
     def create_post(self, content, mentions, hashtags, images):
         # hashtags and alt_texts are not used in this function
-        result = asyncio.run(self.sync_create_post(content, mentions, images))
-        return result
+        result, link = asyncio.run(self.async_create_post(content, mentions, images))
+        return result, link

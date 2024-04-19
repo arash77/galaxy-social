@@ -1,6 +1,6 @@
 import time
-import requests
 import os
+from lib.github_comment import comment_to_github
 
 
 class markdown_client:
@@ -23,19 +23,7 @@ class markdown_client:
                 ) as f:
                     f.write(text)
             if os.getenv("PREVIEW"):
-                github_token = os.getenv("GITHUB_TOKEN")
-                repo_owner, repo_name = os.getenv("GITHUB_REPOSITORY").split("/")
-                pr_number = os.getenv("GITHUB_REF_NAME").split("/")[0]
-                headers = {
-                    "Accept": "application/vnd.github+json",
-                    "Authorization": f"Bearer {github_token}",
-                    "X-GitHub-Api-Version": "2022-11-28",
-                }
-                url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/issues/{pr_number}/comments"
-                data = {"body": text}
-                response = requests.post(url, headers=headers, json=data)
-                if response.status_code != 201:
-                    raise Exception("Failed to create comment")
-            return True
+                comment_to_github(text)
+            return True, None
         except:
-            return False
+            return False, None

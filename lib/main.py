@@ -6,6 +6,7 @@ import fnmatch
 import yaml
 import importlib
 import jsonschema
+from github_comment import comment_to_github
 
 with open("plugins.yml", "r") as file:
     plugins_config = yaml.safe_load(file)
@@ -21,8 +22,8 @@ for plugin in plugins_config["plugins"]:
         try:
             module = importlib.import_module(f"plugins.{module_name}")
             plugin_class = getattr(module, class_name)
-        except ModuleNotFoundError:
-            raise RuntimeError(f"Plugin {module_name}.{class_name} not found")
+        except:
+            comment_to_github(f"Plugin {module_name}.{class_name} not found", error=True)
 
         try:
             config = {
@@ -30,13 +31,14 @@ for plugin in plugins_config["plugins"]:
                 for key, value in plugin["config"].items()
                 if (not isinstance(value, int) and os.environ.get(value) is not None)
             }
-        except KeyError:
-            raise RuntimeError(f"Missing config for {module_name}.{class_name}")
+        except:
+            comment_to_github(f"Missing config for {module_name}.{class_name}", error=True)
 
         try:
             plugins[plugin["name"].lower()] = plugin_class(**config)
-        except TypeError:
-            raise RuntimeError(f"Invalid config for {module_name}.{class_name}.")
+        except:
+            comment_to_github(f"Invalid config for {module_name}.{class_name}.", error=True)
+        
 
 
 def parse_markdown_file(file_path):
@@ -49,13 +51,13 @@ def parse_markdown_file(file_path):
             schema = yaml.safe_load(f)
         jsonschema.validate(instance=metadata, schema=schema)
     except:
-        raise Exception(f"Invalid metadata in {file_path}")
+        comment_to_github(f"Invalid metadata in {file_path}", error=True)
 
     metadata["media"] = [media.lower() for media in metadata["media"]]
 
     for media in metadata["media"]:
         if not any(item["name"].lower() == media for item in plugins_config["plugins"]):
-            raise Exception(f"Invalid media {media}")
+            comment_to_github(f"Invalid media {media}", error=True)
 
     
     metadata["mentions"] = (
@@ -74,16 +76,16 @@ def parse_markdown_file(file_path):
     )
     return plain_content, metadata
 
-
 def process_markdown_file(file_path, processed_files):
     content, metadata = parse_markdown_file(file_path)
-    stats = {}
     if os.getenv("PREVIEW"):
         try:
             plugins["markdown"].create_post(content, [], [], metadata.get("images", []), media = metadata["media"])
             return processed_files
         except:
-            raise Exception(f"Failed to create preview for {file_path}")
+            comment_to_github(f"Failed to create preview for {file_path}", error=True)
+    stats = {}
+    url = {}
     for media in metadata["media"]:
         if file_path in processed_files and media in processed_files[file_path]:
             stats[media] = processed_files[file_path][media]
@@ -91,7 +93,10 @@ def process_markdown_file(file_path, processed_files):
         mentions = metadata.get("mentions", {}).get(media, [])
         hashtags = metadata.get("hashtags", {}).get(media, [])
         images = metadata.get("images", [])
-        stats[media] = plugins[media].create_post(content, mentions, hashtags, images)
+        stats[media], url[media] = plugins[media].create_post(content, mentions, hashtags, images)
+    url_text = "\n".join([f"[{media}]({link})" for media, link in url.items()])
+    comment_to_github(f"Posted to:\n\n{url_text}")
+
     processed_files[file_path] = stats
     print(f"Processed {file_path}: {stats}")
     return processed_files

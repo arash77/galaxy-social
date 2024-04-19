@@ -1,14 +1,16 @@
 from slack_sdk import WebClient
 import requests
 import os
+import textwrap
 
 
 class slack_client:
     def __init__(self, **kwargs):
         self.client = WebClient(token=kwargs.get("access_token"))
         self.channel_id = kwargs.get("channel_id")
+        self.max_content_length = kwargs.get("max_content_length", 40000)
 
-    def upload_images(self, images, text):
+    def upload_images(self, images, text=None):
         uploaded_files = []
         for image in images:
             filename = image["url"].split("/")[-1]
@@ -38,13 +40,41 @@ class slack_client:
         response = self.client.files_completeUploadExternal(
             files=uploaded_files, channel_id=self.channel_id, initial_comment=text
         )
-        return response["ok"]
+        return response
 
     def create_post(self, text, mentions, hashtags, images):
-        if images:
-            response = self.upload_images(images, text)
+        status = []
+        if self.max_content_length < len(text):
+            parent_ts = None
+            for text in textwrap.wrap(
+                text,
+                self.max_content_length,
+                replace_whitespace=False,
+            ):
+                response = self.client.chat_postMessage(
+                    channel=self.channel_id,
+                    text=text,
+                    thread_ts=parent_ts if parent_ts else None,
+                )
+                if not parent_ts:
+                    parent_ts = response["ts"]
+                    link = self.client.chat_getPermalink(
+                        channel=self.channel_id, message_ts=parent_ts
+                    )["permalinkw"]
+                status.append(response["ok"])
+            if images:
+                response = self.upload_images(images)
+                status.append(response["ok"])
         else:
-            response = self.client.chat_postMessage(channel=self.channel_id, text=text)[
-                "ok"
-            ]
-        return response
+            if images:
+                response = self.upload_images(images, text)
+                status.append(response["ok"])
+            else:
+                response = self.client.chat_postMessage(
+                    channel=self.channel_id, text=text
+                )
+                status.append(response["ok"])
+                link = self.client.chat_getPermalink(
+                    channel=self.channel_id, message_ts=response["ts"]
+                )["permalinkw"]
+        return all(status), link

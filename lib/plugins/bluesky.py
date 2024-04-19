@@ -7,8 +7,9 @@ import textwrap
 
 
 class bluesky_client:
-    def __init__(self, base_url="https://bsky.social", **kwargs):
-        self.blueskysocial = atproto.Client(base_url=base_url)
+    def __init__(self, **kwargs):
+        self.base_url = kwargs.get("base_url", "https://bsky.social")
+        self.blueskysocial = atproto.Client(self.base_url)
         self.blueskysocial.login(
             login=kwargs.get("username"), password=kwargs.get("password")
         )
@@ -180,7 +181,7 @@ class bluesky_client:
             post = self.blueskysocial.send_post(
                 text, facets=facets, embed=embed, reply_to=reply_to
             )
-
+            
             for _ in range(5):
                 data = self.blueskysocial.get_posts([post.uri]).posts
                 if data:
@@ -188,8 +189,9 @@ class bluesky_client:
                     break
 
             if reply_to is None:
+                link = f"https://bsky.app/profile/{self.blueskysocial.me.handle}/post/{post.uri.split('/')[-1]}"
                 root = atproto.models.create_strong_ref(post)
             parent = atproto.models.create_strong_ref(post)
             reply_to = atproto.models.AppBskyFeedPost.ReplyRef(parent=parent, root=root)
 
-        return all(status)
+        return all(status), link

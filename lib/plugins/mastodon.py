@@ -5,9 +5,10 @@ import requests
 
 
 class mastodon_client:
-    def __init__(self, base_url="https://mstdn.science", **kwargs):
+    def __init__(self, **kwargs):
+        self.base_url = kwargs.get("base_url", "https://mstdn.science")
         self.mastodon_handle = Mastodon(
-            access_token=kwargs.get("access_token"), api_base_url=base_url
+            access_token=kwargs.get("access_token"), api_base_url=self.base_url
         )
         self.max_content_length = kwargs.get("max_content_length", 500)
 
@@ -39,7 +40,11 @@ class mastodon_client:
                 in_reply_to_id=toot_id,
                 media_ids=media_ids if (media_ids != [] and toot_id == None) else None,
             )
-            toot_id = toot.id
+            
+            if not toot_id:
+                link = f"{self.base_url}/@{toot['account']['acct']}/{toot_id}"
+            toot_id = toot["id"]
+            
             for _ in range(3):
                 post = self.mastodon_handle.status(toot_id)
                 if post.content:
@@ -51,4 +56,4 @@ class mastodon_client:
                     )
                     break
 
-        return all(status)
+        return all(status), link

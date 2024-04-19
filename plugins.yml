@@ -31,6 +31,7 @@ plugins:
     config:
       access_token: SLACK_ACCESS_TOKEN
       channel_id: SLACK_CHANNEL_ID
+      max_content_length: 40000
 
   - name: markdown
     class: markdown.markdown_client

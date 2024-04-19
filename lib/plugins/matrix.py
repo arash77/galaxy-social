@@ -5,7 +5,6 @@ import magic
 from PIL import Image
 from nio import AsyncClient, UploadResponse
 import asyncio
-from github_comment import comment_to_github
 
 class matrix_client:
 

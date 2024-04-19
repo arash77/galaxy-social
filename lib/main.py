@@ -23,7 +23,9 @@ for plugin in plugins_config["plugins"]:
             module = importlib.import_module(f"plugins.{module_name}")
             plugin_class = getattr(module, class_name)
         except:
-            comment_to_github(f"Error with plugin {module_name}.{class_name}.", error=True)
+            comment_to_github(
+                f"Error with plugin {module_name}.{class_name}.", error=True
+            )
 
         try:
             config = {
@@ -32,13 +34,16 @@ for plugin in plugins_config["plugins"]:
                 if (not isinstance(value, int) and os.environ.get(value) is not None)
             }
         except:
-            comment_to_github(f"Missing config for {module_name}.{class_name}.", error=True)
+            comment_to_github(
+                f"Missing config for {module_name}.{class_name}.", error=True
+            )
 
         try:
             plugins[plugin["name"].lower()] = plugin_class(**config)
         except:
-            comment_to_github(f"Invalid config for {module_name}.{class_name}.", error=True)
-        
+            comment_to_github(
+                f"Invalid config for {module_name}.{class_name}.", error=True
+            )
 
 
 def parse_markdown_file(file_path):
@@ -59,7 +64,6 @@ def parse_markdown_file(file_path):
         if not any(item["name"].lower() == media for item in plugins_config["plugins"]):
             comment_to_github(f"Invalid media {media}.", error=True)
 
-    
     metadata["mentions"] = (
         {key.lower(): value for key, value in metadata["mentions"].items()}
         if metadata.get("mentions")
@@ -76,11 +80,14 @@ def parse_markdown_file(file_path):
     )
     return plain_content, metadata
 
+
 def process_markdown_file(file_path, processed_files):
     content, metadata = parse_markdown_file(file_path)
     if os.getenv("PREVIEW"):
         try:
-            plugins["markdown"].create_post(content, [], [], metadata.get("images", []), media = metadata["media"])
+            plugins["markdown"].create_post(
+                content, [], [], metadata.get("images", []), media=metadata["media"]
+            )
             return processed_files
         except:
             comment_to_github(f"Failed to create preview for {file_path}.", error=True)
@@ -93,8 +100,10 @@ def process_markdown_file(file_path, processed_files):
         mentions = metadata.get("mentions", {}).get(media, [])
         hashtags = metadata.get("hashtags", {}).get(media, [])
         images = metadata.get("images", [])
-        stats[media], url[media] = plugins[media].create_post(content, mentions, hashtags, images)
-    url_text = "\n".join([f"[{media}]({link})" for media, link in url.items()])
+        stats[media], url[media] = plugins[media].create_post(
+            content, mentions, hashtags, images
+        )
+    url_text = "\n".join([f"[{media}]({link})" for media, link in url.items() if link])
     comment_to_github(f"Posted to:\n\n{url_text}")
 
     processed_files[file_path] = stats

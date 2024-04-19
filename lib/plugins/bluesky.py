@@ -181,7 +181,7 @@ class bluesky_client:
             post = self.blueskysocial.send_post(
                 text, facets=facets, embed=embed, reply_to=reply_to
             )
-            
+
             for _ in range(5):
                 data = self.blueskysocial.get_posts([post.uri]).posts
                 if data:

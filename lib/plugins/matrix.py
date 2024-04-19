@@ -6,6 +6,7 @@ from PIL import Image
 from nio import AsyncClient, UploadResponse
 import asyncio
 
+
 class matrix_client:
 
     def __init__(self, **kwargs):
@@ -81,7 +82,7 @@ class matrix_client:
             link = f"https://matrix.to/#/{self.room_id}/{message_id}"
         except:
             return False, None
-        
+
         return True, link
 
     def create_post(self, content, mentions, hashtags, images):

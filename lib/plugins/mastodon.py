@@ -42,7 +42,7 @@ class mastodon_client:
             )
             
             if not toot_id:
-                link = f"{self.base_url}/@{toot['account']['acct']}/{toot_id}"
+                link = f"{self.base_url}/@{toot['account']['acct']}/{toot["id"]}"
             toot_id = toot["id"]
             
             for _ in range(3):

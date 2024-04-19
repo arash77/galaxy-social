@@ -13,7 +13,7 @@ def comment_to_github(comment_text, error=False):
     }
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/issues/{pr_number}/comments"
     data = {"body": comment_text}
-    print(f"Posting comment to {url})")
+    print(f"Posting comment to {url}")
     response = requests.post(url, headers=headers, json=data)
     print(response.json())
     if response.status_code != 201:

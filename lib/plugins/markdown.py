@@ -5,7 +5,7 @@ from github_comment import comment_to_github
 
 class markdown_client:
     def __init__(self, **kwargs):
-        self.save_path = kwargs.get("save_path")
+        self.save_path = kwargs.get("save_path") if "save_path" in kwargs else None
 
     def create_post(self, content, mentions, hashtags, images, **kwargs):
         try:
@@ -15,7 +15,7 @@ class markdown_client:
             mentions = " ".join([f"@{v}" for v in mentions])
             hashtags = " ".join([f"#{v}" for v in hashtags])
             social_media = ", ".join(kwargs.get("media"))
-            text = f"This is a preview that will be posted to {social_media}:\n\n{content}\n{mentions}\n{hashtags}\n{medias}"
+            text = f"{content}\n{mentions}\n{hashtags}\n{medias}"
             if self.save_path:
                 os.makedirs(self.save_path, exist_ok=True)
                 with open(
@@ -23,7 +23,9 @@ class markdown_client:
                 ) as f:
                     f.write(text)
             if os.getenv("PREVIEW"):
-                comment_to_github(text)
+                comment_text = f"This is a preview that will be posted to {social_media}:\n\n{text}"
+                comment_to_github(comment_text)
             return True, None
-        except:
+        except Exception as e:
+            print(e)
             return False, None

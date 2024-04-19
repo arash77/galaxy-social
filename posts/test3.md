@@ -3,6 +3,7 @@ media:
   - bluesky
   - mastodon
   - matrix
+  - slack
   - markdown
 
 ---

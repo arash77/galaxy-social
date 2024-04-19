@@ -7,6 +7,7 @@ import fnmatch
 import yaml
 import importlib
 import jsonschema
+import requests
 from github_comment import comment_to_github
 
 with open("plugins.yml", "r") as file:
@@ -113,6 +114,21 @@ def process_markdown_file(file_path, processed_files):
 
 
 def main():
+    # using pull_request_target requires a different way to get changed files
+    repo = os.getenv("GITHUB_REPOSITORY")
+    pr_number = os.getenv("PR_NUMBER")
+    url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/files"
+    response = requests.post(url)
+    if response.status_code == 200:
+        changed_files = response.json()
+        for file in changed_files:
+            raw_url = file["raw_url"]
+            if raw_url.endswith(".md"):
+                response = requests.get(raw_url)
+                if response.status_code == 200:
+                    with open(file["filename"], "w") as f:
+                        f.write()
+                        
     processed_files = {}
     if os.path.exists("processed_files.json"):
         with open("processed_files.json", "r") as file:

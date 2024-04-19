@@ -13,10 +13,9 @@ def comment_to_github(comment_text, error=False):
     }
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/issues/{pr_number}/comments"
     data = {"body": comment_text}
-    print(f"Posting comment to {url}: {comment_text}")
     response = requests.post(url, headers=headers, json=data)
     if response.status_code != 201:
-        raise Exception("Failed to create github comment!")
+        raise Exception(f"Failed to create github comment!, {response.json().get('message')}")
     else:
         if error:
             raise Exception(comment_text)

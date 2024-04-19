@@ -9,8 +9,6 @@ jobs:
   preview:
     name: Preview
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,6 +42,6 @@ jobs:
         if: steps.get_changed_files.outputs.any_changed == 'true'
         env:
           CHANGED_FILES: ${{ steps.get_changed_files.outputs.all_changed_files }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.USER_GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         run: python -u lib/galaxy-social.py preview

@@ -4,6 +4,5 @@ media:
   - mastodon
   - matrix
   - slack
-  
 ---
 Testing api!

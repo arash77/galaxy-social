@@ -126,6 +126,7 @@ def main():
             if raw_url.endswith(".md"):
                 response = requests.get(raw_url)
                 if response.status_code == 200:
+                    print(f"Processing {file['filename']}")
                     with open(file["filename"], "w") as f:
                         f.write(response.text)
                         

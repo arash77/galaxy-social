@@ -1,6 +1,6 @@
 import time
 import os
-from lib.github_comment import comment_to_github
+from github_comment import comment_to_github
 
 
 class markdown_client:

@@ -40,11 +40,11 @@ class mastodon_client:
                 in_reply_to_id=toot_id,
                 media_ids=media_ids if (media_ids != [] and toot_id == None) else None,
             )
-            
+
             if not toot_id:
                 link = f"{self.base_url}/@{toot['account']['acct']}/{toot['id']}"
             toot_id = toot["id"]
-            
+
             for _ in range(3):
                 post = self.mastodon_handle.status(toot_id)
                 if post.content:

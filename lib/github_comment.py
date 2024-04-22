@@ -12,11 +12,12 @@ def comment_to_github(comment_text, error=False):
         "X-GitHub-Api-Version": "2022-11-28",
     }
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/issues/{pr_number}/comments"
-    print(f"Posting comment to {url}")
     data = {"body": comment_text}
     response = requests.post(url, headers=headers, json=data)
     if response.status_code != 201:
-        raise Exception("Failed to create comment")
+        raise Exception(
+            f"Failed to create github comment!, {response.json().get('message')}"
+        )
     else:
         if error:
             raise Exception(comment_text)

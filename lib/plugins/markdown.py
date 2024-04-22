@@ -23,7 +23,7 @@ class markdown_client:
                     f"{self.save_path}/{time.strftime('%Y%m%d-%H%M%S')}.md", "w"
                 ) as f:
                     f.write(text)
-            if 'preview' in sys.argv:
+            if "preview" in sys.argv:
                 comment_text = f"This is a preview that will be posted to {social_media}:\n\n{text}"
                 comment_to_github(comment_text)
             return True, None

@@ -118,14 +118,8 @@ def main():
     # todo: create a pr to test this feature if not working try to work with pull-request event and using GITHUB_TOKEN of a user
     repo = os.getenv("GITHUB_REPOSITORY")
     pr_number = os.getenv("PR_NUMBER")
-    github_token = os.getenv("GITHUB_TOKEN")
     url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/files"
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "Authorization": f"Bearer {github_token}",
-        "X-GitHub-Api-Version": "2022-11-28",
-    }
-    response = requests.post(url, headers)
+    response = requests.get(url)
     print(response.json(), url)
     if response.status_code == 200:
         changed_files = response.json()

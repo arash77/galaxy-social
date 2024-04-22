@@ -15,7 +15,7 @@ with open("plugins.yml", "r") as file:
 
 plugins = {}
 for plugin in plugins_config["plugins"]:
-    if 'preview' in sys.argv and plugin["name"].lower() != "markdown":
+    if "preview" in sys.argv and plugin["name"].lower() != "markdown":
         continue
 
     if plugin["enabled"]:
@@ -85,7 +85,7 @@ def parse_markdown_file(file_path):
 
 def process_markdown_file(file_path, processed_files):
     content, metadata = parse_markdown_file(file_path)
-    if 'preview' in sys.argv:
+    if "preview" in sys.argv:
         try:
             plugins["markdown"].create_post(
                 content, [], [], metadata.get("images", []), media=metadata["media"]
@@ -114,8 +114,6 @@ def process_markdown_file(file_path, processed_files):
 
 
 def main():
-    # using pull_request_target requires a different way to get changed files
-    # todo: create a pr to test this feature if not working try to work with pull-request event and using GITHUB_TOKEN of a user
     repo = os.getenv("GITHUB_REPOSITORY")
     pr_number = os.getenv("PR_NUMBER")
     url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/files"
@@ -130,7 +128,7 @@ def main():
                 if response.status_code == 200:
                     with open(file["filename"], "w") as f:
                         f.write(response.text)
-                        
+
     processed_files = {}
     if os.path.exists("processed_files.json"):
         with open("processed_files.json", "r") as file:

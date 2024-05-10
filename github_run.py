@@ -31,7 +31,7 @@ class github_run:
         url = (
             f"https://api.github.com/repos/{self.repo}/issues/{self.pr_number}/comments"
         )
-        data = {"body": comment_text}
+        data = {"body": str(comment_text)}
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 201:
             return True

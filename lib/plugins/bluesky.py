@@ -1,9 +1,10 @@
 import re
-from typing import Dict, List
+import textwrap
+from typing import Dict, List, Optional, Tuple, cast
+
 import atproto
 import requests
 from bs4 import BeautifulSoup
-import textwrap
 
 
 class bluesky_client:
@@ -57,7 +58,7 @@ class bluesky_client:
             )
         return spans
 
-    def parse_facets(self, text: str) -> List[Dict]:
+    def parse_facets(self, text: str) -> Tuple[List[Dict], Optional[str]]:
         facets = []
         for h in self.parse_hashtags(text):
             facets.append(
@@ -109,7 +110,9 @@ class bluesky_client:
             last_url = u["url"]
         return facets, last_url
 
-    def handle_url_card(self, url: str):
+    def handle_url_card(
+        self, url: str
+    ) -> Optional[atproto.models.AppBskyEmbedExternal.Main]:
         try:
             response = requests.get(url)
         except:
@@ -118,7 +121,7 @@ class bluesky_client:
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, "html.parser")
             title_tag = soup.find("meta", attrs={"property": "og:title"})
-            title_tag_alt = soup.title.string
+            title_tag_alt = soup.title.string if soup.title else None
             description_tag = soup.find("meta", attrs={"property": "og:description"})
             description_tag_alt = soup.find("meta", attrs={"name": "description"})
             image_tag = soup.find("meta", attrs={"property": "og:image"})
@@ -146,11 +149,15 @@ class bluesky_client:
             )
         return embed_external
 
-    def create_post(self, content, mentions, hashtags, images):
+    def create_post(
+        self, content, mentions, hashtags, images, **kwargs
+    ) -> Tuple[bool, Optional[str]]:
         embed_images = []
         for image in images[:4]:
             response = requests.get(image["url"])
-            if response.status_code == 200:
+            if response.status_code == 200 and response.headers.get(
+                "Content-Type", ""
+            ).startswith("image/"):
                 img_data = response.content
                 upload = self.blueskysocial.com.atproto.repo.upload_blob(img_data)
                 embed_images.append(
@@ -176,7 +183,7 @@ class bluesky_client:
         ):
             facets, last_url = self.parse_facets(text)
             if not images or reply_to:
-                embed = self.handle_url_card(last_url)
+                embed = self.handle_url_card(cast(str, last_url))
 
             post = self.blueskysocial.send_post(
                 text, facets=facets, embed=embed, reply_to=reply_to

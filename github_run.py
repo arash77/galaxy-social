@@ -51,7 +51,7 @@ class github_run:
                     response = requests.get(raw_url)
                     if response.status_code == 200:
                         changed_file_path = file["filename"]
-                        os.mkdir(
+                        os.makedirs(
                             os.path.dirname(changed_file_path),
                             exist_ok=True,
                         )

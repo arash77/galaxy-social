@@ -16,7 +16,12 @@ class github_run:
 
     def comment(self, comment_text):
         print(comment_text)
-        if not comment_text or not self.github_token or not self.repo or not self.pr_number:
+        if (
+            not comment_text
+            or not self.github_token
+            or not self.repo
+            or not self.pr_number
+        ):
             return
         headers = {
             "Accept": "application/vnd.github+json",
@@ -46,6 +51,10 @@ class github_run:
                     response = requests.get(raw_url)
                     if response.status_code == 200:
                         changed_file_path = file["filename"]
+                        os.mkdir(
+                            os.path.dirname(changed_file_path),
+                            exist_ok=True,
+                        )
                         with open(changed_file_path, "w") as f:
                             f.write(response.text)
 
